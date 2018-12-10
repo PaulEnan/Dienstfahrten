@@ -31,8 +31,8 @@ public class ApiUser implements IApiUser {
         String destinationAsQuery = makeStringQueryCompliant(destination);
         String url = "distancematrix/json";
         HashMap map = new HashMap();
-        map.put("origin", originAsQuery);
-        map.put("destination", destinationAsQuery);
+        map.put("origins", originAsQuery);
+        map.put("destinations", destinationAsQuery);
         map.put("key", key);
         String queryString = "";
         try {

@@ -44,42 +44,56 @@ public class Calculator {
         this.fix = fix;
     }
 
-    public String calculateDistance(String origin, String destination) {
-        JSONObject originObject = apiUser.getExistingAddress(origin);
-        JSONObject destinationObject = apiUser.getExistingAddress(destination);
+    public String caclculateCostsForMultipleStations(String[] stations) {
+        String result = "0";
+        for (int i = 0; i < stations.length - 1; i++) {
+            double currentResult = Double.parseDouble(result);
+            String nextStationResult = calculateCosts(stations[i], stations[i + 1]);
+            if (!nextStationResult.matches("[0-9]+(\\.[0-9]+)?")) {
+                return nextStationResult;
+            }
+            result = (currentResult + Double.parseDouble(nextStationResult)) + "";
+        }
+        return result;
+    }
 
-        if (!"".equals(originObject.toString())
-                && "OK".equals(originObject.getString("status").toUpperCase())) { //TODO differenziertere fehlererkennung und meldung
-            if (!"".equals(destinationObject.toString())
-                    && "OK".equals(destinationObject.getString("status").toUpperCase())) {
-                String originAddress = originObject.getJSONArray("candidates")
-                        .getJSONObject(0).getString("formatted_address");
-                String destinationAddress = destinationObject.getJSONArray("candidates")
-                        .getJSONObject(0).getString("formatted_address");
+    public String calculateCosts(String origin, String destination) {
+        //only works for one origin to one destination. 
+        if (!origin.contains("|") && !destination.contains("|")) {
+            JSONObject originObject = apiUser.getExistingAddress(origin);
+            JSONObject destinationObject = apiUser.getExistingAddress(destination);
 
-                JSONObject distanceObject = apiUser.getDistance(originAddress, destinationAddress);
+            if (!"".equals(originObject.toString())
+                    && "OK".equals(originObject.getString("status").toUpperCase())) { //TODO differenziertere fehlererkennung und meldung
+                if (!"".equals(destinationObject.toString())
+                        && "OK".equals(destinationObject.getString("status").toUpperCase())) {
+                    String originAddress = originObject.getJSONArray("candidates")
+                            .getJSONObject(0).getString("formatted_address");
+                    String destinationAddress = destinationObject.getJSONArray("candidates")
+                            .getJSONObject(0).getString("formatted_address");
 
-                if (!"".equals(distanceObject)
-                        && "OK".equals(distanceObject.getString("status").toUpperCase())) {
-                    JSONArray elements = distanceObject.getJSONArray("rows");
+                    JSONObject distanceObject = apiUser.getDistance(originAddress, destinationAddress);
+
                     int distance = 0;
-                    
-                    for (int i = 0; i < elements.length(); i++) {
-                        JSONObject distanceElement = elements.getJSONObject(i);
+                    if (!distanceObject.isEmpty()
+                            && "OK".equals(distanceObject.getString("status").toUpperCase())) {
+                        JSONArray rows = distanceObject.getJSONArray("rows");
+                        JSONObject distanceElement = rows.getJSONObject(0).getJSONArray("elements").getJSONObject(0);
                         if ("OK".equals(distanceElement.getString("status").toUpperCase())) {
                             String distanceString = distanceElement.getJSONObject("distance").getString("text");
                             Double amount = Double.parseDouble(distanceString.substring(0, distanceString.indexOf(' ')));
                             distance += amount;
                         }
                     }
+
                     double result = distance * variable + fix;
                     return result + "";
                 }
-
+                return autoCompleteAddress(destination);
             }
-            return autoCompleteAddress(destination);
+            return autoCompleteAddress(origin);
         }
-        return autoCompleteAddress(origin);
+        return "Error: No multiple addresses with |";
     }
 
     public String autoCompleteAddress(String address) {

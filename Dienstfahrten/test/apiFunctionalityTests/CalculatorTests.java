@@ -2,6 +2,7 @@ package apiFunctionalityTests;
 
 import apifunctionality.ApiUser;
 import apifunctionality.Calculator;
+import apifunctionality.Language;
 import org.junit.Test;
 
 /*
@@ -17,15 +18,15 @@ public class CalculatorTests {
 
     @Test
     public void manualTest() {
-        Calculator calculator = new Calculator(new ApiUser(), 1, 15);
-        String money = calculator.calculateCosts("Berlin", "Reinbeker Redder");
+        Calculator calculator = new Calculator(new ApiUser());
+        String money = calculator.calculateVariableCosts("Berlin", "Reinbeker Redder", 1, 15, Language.German);
         String asd = money;
     }
 
     @Test
     public void manualTestOfMultipleInstances() {
-        Calculator calculator = new Calculator(new ApiUser(), 1, 15);
-        String money = calculator.caclculateCostsForMultipleStations(new String[]{"Berlin", "Reinbeker Redder", "München", "Rome"});
+        Calculator calculator = new Calculator(new ApiUser());
+        String money = calculator.caclculateCostsForMultipleStations(new String[]{"Berlin", "Reinbeker Redder", "München", "Rome"}, 1, 15, Language.German);
         String asd = money;
     }
 }

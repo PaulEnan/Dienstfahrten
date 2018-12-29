@@ -26,13 +26,14 @@ public class ApiUser implements IApiUser {
     private final String googleUrl = "https://maps.googleapis.com/maps/api/";
 
     @Override
-    public JSONObject getDistance(String origin, String destination) {
+    public JSONObject getDistance(String origin, String destination, Language language) {
         String originAsQuery = makeStringQueryCompliant(origin);
         String destinationAsQuery = makeStringQueryCompliant(destination);
         String url = "distancematrix/json";
         HashMap map = new HashMap();
         map.put("origins", originAsQuery);
         map.put("destinations", destinationAsQuery);
+        map.put("language", language.asString);
         map.put("key", key);
         String queryString = "";
         try {
@@ -45,7 +46,7 @@ public class ApiUser implements IApiUser {
     }
 
     @Override
-    public JSONObject getExistingAddress(String name) {
+    public JSONObject getExistingAddress(String name, Language language) {
 
         String nameAsQuery = makeStringQueryCompliant(name);
         String url = "place/findplacefromtext/json";
@@ -53,6 +54,7 @@ public class ApiUser implements IApiUser {
         map.put("input", nameAsQuery);
         map.put("inputtype", "textquery");
         map.put("fields", "formatted_address");
+        map.put("language", language.asString);
         map.put("key", key);
         String queryString = "";
         try {
@@ -65,11 +67,12 @@ public class ApiUser implements IApiUser {
     }
 
     @Override
-    public JSONObject getAutoCompleter(String name) {
+    public JSONObject getAutoCompleter(String name, Language language) {
         String nameAsQuery = makeStringQueryCompliant(name);
         String url = "place/autocomplete/json";
         HashMap map = new HashMap();
         map.put("input", nameAsQuery);
+        map.put("language", language.asString);
         map.put("key", key);
         String queryString = "";
         try {

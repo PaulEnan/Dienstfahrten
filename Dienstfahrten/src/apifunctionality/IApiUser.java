@@ -14,9 +14,9 @@ import org.json.JSONObject;
 public interface IApiUser {
     
     
-    public JSONObject getDistance(String origin, String destination);
+    public JSONObject getDistance(String origin, String destination, Language language);
     
-    public JSONObject getExistingAddress(String name);
+    public JSONObject getExistingAddress(String name, Language language);
     
-    public JSONObject getAutoCompleter(String name);
+    public JSONObject getAutoCompleter(String name, Language language);
 }

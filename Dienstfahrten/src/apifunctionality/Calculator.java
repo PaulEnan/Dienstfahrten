@@ -15,53 +15,28 @@ import org.json.JSONObject;
 public class Calculator {
 
     private final IApiUser apiUser;
-    private int variable;
-    private int fix;
 
     public Calculator(IApiUser apiUser) {
-        this(apiUser, 0, 0);
-    }
-
-    public Calculator(IApiUser apiUser, int variable, int fix) {
         this.apiUser = apiUser;
-        this.variable = variable;
-        this.fix = fix;
     }
-
-    public int getVariable() {
-        return variable;
-    }
-
-    public int getFix() {
-        return fix;
-    }
-
-    public void changeVariable(int variable) {
-        this.variable = variable;
-    }
-
-    public void changeFix(int fix) {
-        this.fix = fix;
-    }
-
-    public String caclculateCostsForMultipleStations(String[] stations) {
+    public String caclculateCostsForMultipleStations(String[] stations, double fix, double var, Language language) {
         String result = "0";
         for (int i = 0; i < stations.length - 1; i++) {
             double currentResult = Double.parseDouble(result);
-            String nextStationResult = calculateCosts(stations[i], stations[i + 1]);
+            String nextStationResult = calculateVariableCosts(stations[i], stations[i + 1], fix, var, language);
             if (!nextStationResult.matches("[0-9]+(\\.[0-9]+)?")) {
                 return nextStationResult;
             }
             result = (currentResult + Double.parseDouble(nextStationResult)) + "";
         }
-        return result;
+        return (Double.parseDouble(result) + fix) + "";
     }
 
-    public String calculateCosts(String origin, String destination) {
+    public String calculateVariableCosts(String origin, String destination, double fix, double var, Language language) {
         //only works for one origin to one destination. 
         if (!origin.contains("|") && !destination.contains("|")) {
-            JSONObject originObject = apiUser.getExistingAddress(origin);
-            JSONObject destinationObject = apiUser.getExistingAddress(destination);
+            JSONObject originObject = apiUser.getExistingAddress(origin, language);
+            JSONObject destinationObject = apiUser.getExistingAddress(destination, language);
 
             if (!"".equals(originObject.toString())
                     && "OK".equals(originObject.getString("status").toUpperCase())) { //TODO differenziertere fehlererkennung und meldung
@@ -72,7 +47,7 @@ public class Calculator {
                     String destinationAddress = destinationObject.getJSONArray("candidates")
                             .getJSONObject(0).getString("formatted_address");
 
-                    JSONObject distanceObject = apiUser.getDistance(originAddress, destinationAddress);
+                    JSONObject distanceObject = apiUser.getDistance(originAddress, destinationAddress, language);
 
                     int distance = 0;
                     if (!distanceObject.isEmpty()
@@ -86,18 +61,18 @@ public class Calculator {
                         }
                     }
 
-                    double result = distance * variable + fix;
+                    double result = distance * var;
                     return result + "";
                 }
-                return autoCompleteAddress(destination);
+                return autoCompleteAddress(destination, language);
             }
-            return autoCompleteAddress(origin);
+            return autoCompleteAddress(origin, language);
         }
-        return "Error: No multiple addresses with |";
+        return Messages.NoAdressesWith('|', language);
     }
 
-    public String autoCompleteAddress(String address) {
-        JSONObject addressObject = apiUser.getAutoCompleter(address);
+    public String autoCompleteAddress(String address, Language language) {
+        JSONObject addressObject = apiUser.getAutoCompleter(address, language);
 
         if (!"".equals(addressObject.toString())
                 && "OK".equals(addressObject.getString("status").toUpperCase())) { //TODO differenziertere fehlererkennung und meldung
@@ -105,10 +80,10 @@ public class Calculator {
             String result = "";
             for (int i = 0; i < array.length(); i++) {
                 JSONObject prediction = array.getJSONObject(i);
-                result = result + (!"".equals(result) ? "|" : "") + prediction.getString("description");
+                result = result + (!"".equals(result) ? "||" : "") + prediction.getString("description");
             }
             return result;
         }
-        return "Error: NO FUCKING RESULTS YOU COCK!"; // wird noch geändert. derzeit gilt: Wenn was scheif gelaufen ist, ist das erste Wort Error:
+        return Messages.NotFound(address, Language.English);
     }
 }

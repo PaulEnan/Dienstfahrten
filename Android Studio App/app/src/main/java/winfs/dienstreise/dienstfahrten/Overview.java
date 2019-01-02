@@ -22,7 +22,6 @@ public class Overview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         if (!isNetworkAvailable()) {
             showConnectionAlertDialog();
-
         }
         else {
             loadVoyages();
@@ -38,24 +37,22 @@ public class Overview extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent openNewVoyage = new Intent(getApplicationContext(), VoyageDetail.class);
-                openNewVoyage.putExtra(
-                        "winfs.dienstreise.dienstfahrten.SESSIONDATA",
-                        -1
-                );
                 startActivity(openNewVoyage);
             }
         });
 
         ListView voyagesListView = findViewById(R.id.voyagesListView);
 
+
+
         // TODO Fahrten Laden und nicht statische nehmen
         LinkedList<SessionData> data = new LinkedList<SessionData>() {{
             add(
                     new SessionData(
-                            new LinkedList<String>() {
+                            new LinkedList<Location>() {
                                 {
-                                    add("Hamburg");
-                                    add("Neuhaus");
+                                    //add("Hamburg");
+                                    //add("Neuhaus");
                                 }
                             },
 
@@ -63,16 +60,15 @@ public class Overview extends AppCompatActivity {
                             60,
                             "Test1",
                             "Johnny Generic",
-                            "Test run",
-                            "free"
+                            "Test run"
                     )
             );
             add(
                     new SessionData(
-                            new LinkedList<String>() {
+                            new LinkedList<Location>() {
                                 {
-                                    add("Bahrenfeld");
-                                    add("Bergedorf");
+                               //     add("Bahrenfeld");
+                                    //add("Bergedorf");
                                 }
                             },
 
@@ -80,8 +76,7 @@ public class Overview extends AppCompatActivity {
                             60,
                             "Test2",
                             "Jane Generic",
-                            "Test run",
-                            "free"
+                            "Test run"
                     )
             );
         }};

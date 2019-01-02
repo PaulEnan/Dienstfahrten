@@ -8,39 +8,38 @@ import java.util.LinkedList;
  */
 public class SessionData {
 
-    private LinkedList<String> stations;
+    private LinkedList<Location> stations;
     private double fixCosts;    
     private double variableCosts;
-    private String name;
+    private String title;
     private String person;
     private String cause;
-    private String taxAllocation;
 
-    public SessionData(LinkedList<String> stations,
-            double fixCosts, double variableCosts, String name, String person, String cause, String taxAllocation) {
-        this.stations = (LinkedList<String>) stations.clone();
+    public SessionData(LinkedList<Location> stations,
+            double fixCosts, double variableCosts, String title, String person,
+                       String cause) {
+        this.stations = (LinkedList<Location>) stations.clone();
         this.fixCosts = fixCosts;
         this.variableCosts = variableCosts;
-        this.name = name;
+        this.title = title;
         this.person = person;
         this.cause = cause;
-        this.taxAllocation = taxAllocation;
     }
 
     @Override
     public SessionData clone() {
-        return new SessionData((LinkedList<String>) stations.clone(), fixCosts, variableCosts, name, person, cause, taxAllocation);
+        return new SessionData((LinkedList<Location>) stations.clone(), fixCosts, variableCosts, title, person, cause);
     }
 
     public LinkedList<String> getStations() {
         return (LinkedList<String>) stations.clone();
     }
 
-    public void addStation(String station, int index) {
+    public void addStation(Location station, int index) {
         this.stations.add(index, station);
     }
     
-    public void addStation(String station) {
+    public void addStation(Location station) {
         this.stations.add(station);
     }
     
@@ -68,9 +67,9 @@ public class SessionData {
         return variableCosts + fixCosts;
     }
 
-    public String getName() { return this.name; }
+    public String getTitle() { return this.title; }
 
-    public void setName(String name) { this.name = name; }
+    public void setTitle(String title) { this.title = title; }
 
     public String getPerson() { return this.person; }
 
@@ -79,8 +78,4 @@ public class SessionData {
     public String getCause() { return this.cause; }
 
     public void setCause(String cause) { this.cause = cause; }
-
-    public String getTaxAllocation() { return this.taxAllocation; }
-
-    public void setTaxAllocation(String taxAllocation) { this.taxAllocation = taxAllocation; }
 }

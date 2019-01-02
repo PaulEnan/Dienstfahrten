@@ -29,13 +29,35 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/TextView1"
+        android:id="@+id/personTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/TextView8"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="25dp"
+        android:text="person"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/TextView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="80dp"
+        android:text="@string/summary_date"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/TextView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="104dp"
         android:text="@string/summary_start"
         android:textSize="16sp"
         android:textStyle="bold" />

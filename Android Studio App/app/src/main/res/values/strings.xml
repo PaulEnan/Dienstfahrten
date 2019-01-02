@@ -5,7 +5,7 @@
     <string name="fragment_start">Start</string>
     <string name="fragment_final_destination">Ziel</string>
     <string name="fragment_destination">Zwischenziel</string>
-    <string name="fragment_summary">Zusammenfassung</string>
+    <string name="fragment_summary">Infos</string>
     <string name="new_voyage">Neue Reise</string>
     <string name="summary_distance">Distanz:</string>
     <string name="summary_variable_costs">Variable Kosten:</string>

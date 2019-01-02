@@ -11,14 +11,14 @@ public class CentralLogic {
     private SessionData session;
 
     public CentralLogic(IApiUser apiUser, ISaveLoadHandler saveLoadHandler) {
-        this(apiUser, saveLoadHandler, new LinkedList<String>(), 0, 0, "", "", "", "");
+        this(apiUser, saveLoadHandler, new LinkedList<Location>(), 0, 0, "", "", "");
     }
 
     public CentralLogic(IApiUser apiUser, ISaveLoadHandler saveLoadHandler,
-                        LinkedList<String> stations, double fixCosts, double variableCosts,
-                        String name, String person, String cause, String taxAllocation) {
+                        LinkedList<Location> stations, double fixCosts, double variableCosts,
+                        String name, String person, String cause) {
         this(apiUser, saveLoadHandler, new SessionData(
-                stations, fixCosts, variableCosts, name, person, cause, taxAllocation));
+                stations, fixCosts, variableCosts, name, person, cause));
     }
 
     public CentralLogic(IApiUser apiUser, ISaveLoadHandler saveLoadHandler, SessionData session) {
@@ -77,7 +77,7 @@ public class CentralLogic {
         SessionData[] sessions = saveLoadHandler.getAllSessions();
         String[] result = new String[sessions.length];
         for (int i = 0; i < sessions.length; i++) {
-            result[i] = sessions[i].getName();
+            result[i] = sessions[i].getTitle();
         }
         return result;
     }
@@ -86,11 +86,11 @@ public class CentralLogic {
         return session.clone();
     }
 
-    public void addStation(String station) {
+    public void addStation(Location station) {
         session.addStation(station);
     }
 
-    public void addStation(String station, int index) {
+    public void addStation(Location station, int index) {
         session.addStation(station, index);
     }
 
@@ -114,9 +114,5 @@ public class CentralLogic {
 
     public void changeCause(String cause) {
         session.setCause(cause);
-    }
-
-    public void changeTaxAllocation(String allocation) {
-        session.setTaxAllocation(allocation);
     }
 }

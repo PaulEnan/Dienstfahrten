@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package winfs.dienstreise.dienstfahrten;
 
 import org.json.JSONArray;
@@ -10,16 +5,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- *
  * @author Paul Enan
  */
 public class Calculator {
 
     private final IApiUser apiUser;
 
+
     public Calculator(IApiUser apiUser) {
         this.apiUser = apiUser;
     }
+
     public String caclculateVariableCostsForMultipleStations(String[] stations, double var)
             throws DienstfahrtenException {
         String result = "0";
@@ -41,7 +37,7 @@ public class Calculator {
             JSONObject destinationObject = apiUser.getExistingAddress(destination);
 
             try {
-                if (!"".equals(originObject.toString())
+                if (originObject != null &&  !originObject.toString().isEmpty()
                         && "OK".equals(originObject.getString("status").toUpperCase())) { //TODO differenziertere fehlererkennung und meldung
                     if (!"".equals(destinationObject.toString())
                             && "OK".equals(destinationObject.getString("status").toUpperCase())) {
@@ -80,19 +76,19 @@ public class Calculator {
     public String autoCompleteAddress(String address) throws DienstfahrtenException {
         JSONObject addressObject = apiUser.getAutoCompleter(address);
         try {
-        if (!"".equals(addressObject.toString())
-                && "OK".equals(addressObject.getString("status").toUpperCase())) { //TODO differenziertere fehlererkennung und meldung
-            JSONArray array = null;
+            if (!"".equals(addressObject.toString())
+                    && "OK".equals(addressObject.getString("status").toUpperCase())) { //TODO differenziertere fehlererkennung und meldung
+                JSONArray array = null;
 
                 array = addressObject.getJSONArray("predictions");
 
-            String result = "";
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject prediction = array.getJSONObject(i);
-                result = result + (!"".equals(result) ? "||" : "") + prediction.getString("description");
+                String result = "";
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject prediction = array.getJSONObject(i);
+                    result = result + (!result.isEmpty() ? "||" : "") + prediction.getString("description");
+                }
+                return result;
             }
-            return result;
-        }
         } catch (JSONException e) {
             e.printStackTrace();
         }

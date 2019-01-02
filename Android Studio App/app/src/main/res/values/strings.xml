@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Dienstfahrten</string>
+    <string name="title_main">Deine Dienstfahrten</string>
+    <string name="action_settings">Settings</string>
+    <string name="fragment_start">Start</string>
+    <string name="fragment_final_destination">Ziel</string>
+    <string name="fragment_destination">Zwischenziel</string>
+    <string name="fragment_summary">Zusammenfassung</string>
+    <string name="new_voyage">Neue Reise</string>
+    <string name="summary_distance">Distanz:</string>
+    <string name="summary_variable_costs">Variable Kosten:</string>
+    <string name="summary_fix_costs">Fixe Kosten:</string>
+    <string name="summary_total_costs">Gesamtkosten:</string>
+    <string name="summary_date">Datum:</string>
+    <string name="summary_heading">Zusammenfasung für die Fahrt: %1$s</string>
+    <string name="summary_start">Startpunkt:</string>
+    <string name="summary_end">Zieladresse:</string>
+    <string name="summary_intermediate">Anzahl Zwischenziele:</string>
+</resources>

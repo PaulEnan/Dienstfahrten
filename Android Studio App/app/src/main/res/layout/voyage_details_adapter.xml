@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/occassionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="12dp"
+        android:text="Occassion" />
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/occassionTextView"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="18dp"
+        android:text="Date" />
+
+    <TextView
+        android:id="@+id/tourTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/occassionTextView"
+        android:layout_alignStart="@+id/occassionTextView"
+        android:text="Tour" />
+
+    <TextView
+        android:id="@+id/totalCostsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/occassionTextView"
+        android:layout_alignEnd="@+id/dateTextView"
+        android:text="Total Costs" />
+</RelativeLayout>

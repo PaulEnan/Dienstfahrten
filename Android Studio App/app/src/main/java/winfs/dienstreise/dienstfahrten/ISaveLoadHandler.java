@@ -10,6 +10,7 @@ package winfs.dienstreise.dienstfahrten;
  * @author Paul Enan
  */
 public interface ISaveLoadHandler {
-    public void Save(String path, SessionData session) throws SaveLoadException;
-    public SessionData Load(String path) throws SaveLoadException;
+    public void Save(SessionData session) throws SaveLoadException;
+    public SessionData Load(int index) throws SaveLoadException;
+    public SessionData[] getAllSessions() throws SaveLoadException;
 }

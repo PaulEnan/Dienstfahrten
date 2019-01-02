@@ -11,12 +11,14 @@ public class CentralLogic {
     private SessionData session;
 
     public CentralLogic(IApiUser apiUser, ISaveLoadHandler saveLoadHandler) {
-        this(apiUser, saveLoadHandler, new LinkedList<String>(), 0, 0);
+        this(apiUser, saveLoadHandler, new LinkedList<String>(), 0, 0, "", "", "", "");
     }
 
     public CentralLogic(IApiUser apiUser, ISaveLoadHandler saveLoadHandler,
-                        LinkedList<String> stations, double fixCosts, double variableCosts) {
-        this(apiUser, saveLoadHandler, new SessionData(stations, fixCosts, variableCosts));
+                        LinkedList<String> stations, double fixCosts, double variableCosts,
+                        String name, String person, String cause, String taxAllocation) {
+        this(apiUser, saveLoadHandler, new SessionData(
+                stations, fixCosts, variableCosts, name, person, cause, taxAllocation));
     }
 
     public CentralLogic(IApiUser apiUser, ISaveLoadHandler saveLoadHandler, SessionData session) {
@@ -27,77 +29,94 @@ public class CentralLogic {
 
     public void SaveSession(String path) throws DienstfahrtenException {
         try {
-            saveLoadHandler.Save(path, session);
+            saveLoadHandler.Save(session);
         } catch (SaveLoadException ex) {
             throw new DienstfahrtenException(ex.getMessage());
         }
     }
 
-    public void LoadSession(String path) throws DienstfahrtenException {
+    public SessionData LoadSession(int index) throws DienstfahrtenException {
         try {
-            this.session = saveLoadHandler.Load(path);
-            //gui.displaySession(session);
+            this.session = saveLoadHandler.Load(index);
+            return session;
         } catch (SaveLoadException ex) {
             throw new DienstfahrtenException(ex.getMessage());
         }
     }
 
-    public String calculateCosts() throws DienstfahrtenException {
+    public String[] calculateCosts() throws DienstfahrtenException {
         String[] stationArr = session.getStations().toArray(new String[session.getStations().size()]);
         String result = calculator.caclculateVariableCostsForMultipleStations(stationArr, session.getVariableCosts());
         if (result.contains("||")) {
             String[] options = result.split("||");
-            //gui.showOtherResults(options);
+            return options;
         } else {
             if (result.toLowerCase().startsWith("error:")) {
                 throw new DienstfahrtenException(result);
             } else {
                 this.session.setVariableCosts(Double.parseDouble(result));
+                return new String[] { session.getFinalCosts() + "" };
             }
         }
-        return result;
     }
 
-    public String useAutoCompleter(String text) throws DienstfahrtenException {
+    public String[] useAutoCompleter(String text) throws DienstfahrtenException {
         String result = calculator.autoCompleteAddress(text);
         if (result.contains("||")) {
             String[] options = result.split("||");
-            //gui.useAutoCompleter(options);
+            return options;
         } else {
             if (result.toLowerCase().startsWith("error:")) {
                 throw new DienstfahrtenException(result);
             }
         }
+        return new String[0];
+    }
+
+    public String[] getAllSessionNames() throws SaveLoadException {
+        SessionData[] sessions = saveLoadHandler.getAllSessions();
+        String[] result = new String[sessions.length];
+        for (int i = 0; i < sessions.length; i++) {
+            result[i] = sessions[i].getName();
+        }
         return result;
+    }
+
+    public SessionData getSession() {
+        return session.clone();
     }
 
     public void addStation(String station) {
         session.addStation(station);
-        //String[] stationArr = session.getStations().toArray(new String[session.getStations().size()]);
-        //gui.displayStations(stationArr);
     }
 
     public void addStation(String station, int index) {
         session.addStation(station, index);
-        //String[] stationArr = session.getStations().toArray(new String[session.getStations().size()]);
-        //gui.displayStations(stationArr);
     }
 
     public void removeStation(int index) {
         if (index > 0 && index < session.getStations().size()) {
             session.removeStation(index);
-            //String[] stationArr = session.getStations().toArray(new String[session.getStations().size()]);
-            //gui.displayStations(stationArr);
         }
     }
 
     public void changeFixCosts(String costs) {
         session.setFixCosts(Double.parseDouble(costs));
-        //gui.displayFixCosts(session.getFixCosts() + "");
     }
 
     public void changeVariableCosts(String costs) {
         session.setVariableCosts(Double.parseDouble(costs));
-        //gui.displayVariableCosts(session.getVariableCosts() + "");
+    }
+
+    public void changePerson(String person) {
+        session.setPerson(person);
+    }
+
+    public void changeCause(String cause) {
+        session.setCause(cause);
+    }
+
+    public void changeTaxAllocation(String allocation) {
+        session.setTaxAllocation(allocation);
     }
 }

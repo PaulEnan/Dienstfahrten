@@ -60,7 +60,11 @@ public class Overview extends AppCompatActivity {
                             },
 
                             50,
-                            60
+                            60,
+                            "Test1",
+                            "Johnny Generic",
+                            "Test run",
+                            "free"
                     )
             );
             add(
@@ -73,7 +77,11 @@ public class Overview extends AppCompatActivity {
                             },
 
                             50,
-                            60
+                            60,
+                            "Test2",
+                            "Jane Generic",
+                            "Test run",
+                            "free"
                     )
             );
         }};

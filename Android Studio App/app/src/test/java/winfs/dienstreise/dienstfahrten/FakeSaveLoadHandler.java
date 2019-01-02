@@ -7,12 +7,17 @@ package winfs.dienstreise.dienstfahrten;
 public class FakeSaveLoadHandler implements ISaveLoadHandler {
 
     @Override
-    public void Save(String path, SessionData session) throws SaveLoadException {
+    public void Save(SessionData session) throws SaveLoadException {
+
     }
 
     @Override
-    public SessionData Load(String path) throws SaveLoadException {
+    public SessionData Load(int index) throws SaveLoadException {
         return null;
     }
-    
+
+    @Override
+    public SessionData[] getAllSessions() throws SaveLoadException {
+        return new SessionData[0];
+    }
 }

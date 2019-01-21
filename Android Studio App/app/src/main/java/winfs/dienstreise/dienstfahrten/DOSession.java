@@ -1,6 +1,7 @@
 package winfs.dienstreise.dienstfahrten;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -9,12 +10,18 @@ import java.util.List;
  */
 public class DOSession {
 
+    boolean isDummy;
     int id;
     List<DODestination> stations;
     String title;
     DOPerson person;
     DOLocation startLocation;
     Date startDate;
+
+    public DOSession() {
+        isDummy = true;
+        stations = new LinkedList<>();
+    }
 
     public DOSession(int id, List<DODestination> stations, String title, DOPerson person,
                      DOLocation startLocation, Date startDate) {
@@ -24,6 +31,7 @@ public class DOSession {
         this.person = person;
         this.startLocation = startLocation;
         this.startDate = startDate;
+        isDummy = false;
     }
 
     public List<DODestination> getStations() {
@@ -55,22 +63,24 @@ public class DOSession {
     }
 
     public double getFinalCosts() {
-        return getVariableCosts() + getTripExtraCosts() + getSleepCosts() + getFoodCosts();
+        return getVariableCosts() + getFixedCosts();
     }
 
-    private double getFoodCosts() {
-        return 0;
-    }
+    private double getFixedCosts() {
+        double costs = 0;
+        for (DODestination dest : stations) {
+            costs += dest.tripExtraCosts + dest.sleepCosts + dest.foodCosts;
+        }
 
-    private double getSleepCosts() {
-        return 0;
-    }
-
-    private double getTripExtraCosts() {
-        return 0;
+        return costs;
     }
 
     private double getVariableCosts() {
+
         return 0;
+    }
+
+    public DOLocation getLastLocation() {
+        return stations.get(stations.size() - 1).location;
     }
 }

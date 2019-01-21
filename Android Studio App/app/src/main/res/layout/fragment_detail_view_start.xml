@@ -22,8 +22,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:inputType="text"
-        android:text="Titel (Reise)" />
+        android:hint="Titel (Reise)"
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/editTextPrename"
@@ -33,7 +33,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="60dp"
         android:inputType="textPersonName"
-        android:text="Vorname (Reisender)" />
+        android:hint="Vorname (Reisender)" />
 
     <EditText
         android:id="@+id/editTextSurname"
@@ -43,7 +43,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="110dp"
         android:inputType="textPersonName"
-        android:text="Nachname (Reisender)" />
+        android:hint="Nachname (Reisender)" />
 
     <EditText
         android:id="@+id/editTextStartDate"
@@ -53,7 +53,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="160dp"
         android:inputType="datetime"
-        android:text="Startdatum" />
+        android:hint="Startdatum (z.B. 13.01.2019 15:00" />
 
     <EditText
         android:id="@+id/editTextPostalCode"
@@ -63,7 +63,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="210dp"
         android:inputType="textPostalAddress"
-        android:text="Postleitzahl (Startpunkt)" />
+        android:hint="Postleitzahl (Startpunkt)" />
 
     <EditText
         android:id="@+id/editTextCity"
@@ -73,7 +73,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="260dp"
         android:inputType="textAutoComplete|textPostalAddress"
-        android:text="Ort (Startpunkt)" />
+        android:hint="Ort (Startpunkt)" />
 
     <EditText
         android:id="@+id/editTextStreet"
@@ -83,7 +83,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="310dp"
         android:inputType="textAutoComplete|textPostalAddress"
-        android:text="Straße (Startpunkt)" />
+        android:hint="Straße (Startpunkt)" />
 
     <EditText
         android:id="@+id/editTextHouseNo"
@@ -93,7 +93,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="360dp"
         android:inputType="textPostalAddress|number|numberSigned"
-        android:text="Hausnummer (Startpunkt)" />
+        android:hint="Hausnummer (Startpunkt)" />
 
 
 </RelativeLayout>

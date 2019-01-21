@@ -51,11 +51,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
 
 
     private static String queryForSession = String.format("SELECT s%1$s, %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, " +
-                    "%8$s, %9$s, %10$s, p%1$s, l%1$s" +
-                    " FROM %11$s " +
-                    " INNER JOIN %12$s ON %13$s = p%1$s" +
-                    " INNER JOIN %14$s ON %15$s = l%1$s", PK, PRENAME, SURNAME, TITLE,
-            STARTLOCATION, POSTALCODE, PLACE, STREET, HOUSENO, STARTDATE, SESSIONTABLE,
+                    "%8$s, %9$s, %10$s, %11$s" +
+                    " FROM %12$s " +
+                    " INNER JOIN %13$s ON %14$s = p%1$s" +
+                    " INNER JOIN %15$s ON %16$s = l%1$s", PK, PRENAME, SURNAME, TITLE,
+            STARTLOCATION, POSTALCODE, PLACE, STREET, HOUSENO, STARTDATE, PERSONID, SESSIONTABLE,
             PERSONSTABLE, PERSONID, LOCATIONTABLE, STARTLOCATION);
 
     private static String queryForDestination = String.format("SELECT d%1$s, %2$s, %3$s, %4$s, %5$s, %6$s, " +
@@ -174,19 +174,20 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
     @Override
     public DOSession Load(int id) throws SaveLoadException {
         try {
-            String query = String.format("%2$s WHERE s%1$s = ?", PK, queryForSession);
+            String query = String.format("%1$s WHERE s%2$s = %3$s", queryForSession, PK, id);
 
-            String destQuery = String.format("%1$s WHERE %2$s = ?", queryForDestination, SESSIONID);
+            String destQuery = String.format("%1$s WHERE %2$s = %3$s", queryForDestination,
+                    SESSIONID, id);
             SQLiteDatabase db = this.getReadableDatabase();
 
-            Cursor cursor = db.rawQuery(destQuery, new String[]{Integer.toString(id)});
+            Cursor cursor = db.rawQuery(destQuery, null);
 
             List<DODestination> destinations = getDestiationsFromCursor(cursor);
             cursor.close();
 
-            cursor = db.rawQuery(query, new String[]{Integer.toString(id)});
-            DOSession session = getSession(cursor.getInt(cursor.getColumnIndex("s" + PK)),
-                    destinations, cursor);
+            Cursor cursorForSession = db.rawQuery(query, null);
+            cursorForSession.moveToFirst();
+            DOSession session = getSession(id, destinations, cursorForSession);
             cursor.close();
             return session;
         } catch (Exception ex) {
@@ -202,11 +203,13 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
             List<DODestination> destinations;
             Cursor cursorForDestinations;
             int sessionId;
-
+            String destQuery = String.format("%1$s WHERE %2$s = ?", queryForDestination,
+                    SESSIONID);
             Cursor cursor = db.rawQuery(queryForSession, null);
             while (cursor.moveToNext()) {
                 sessionId = cursor.getInt(cursor.getColumnIndex("s" + PK));
-                cursorForDestinations = db.rawQuery(queryForDestination, null);
+                cursorForDestinations = db.rawQuery(destQuery,
+                        new String[] {Integer.toString(sessionId)});
 
                 destinations = getDestiationsFromCursor(cursorForDestinations);
                 cursorForDestinations.close();
@@ -216,6 +219,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
             return listSessions;
         } catch (Exception ex) {
             throw new SaveLoadException(ex.getMessage());
+        }
+        finally {
+            db.close();
         }
     }
 
@@ -254,14 +260,14 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
         Date start = null;
         try {
             start = dateFormat.parse(cursor.getString(cursor.getColumnIndex(STARTDATE)));
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new DOSession(id, destinations, cursor.getString(cursor.getColumnIndex(TITLE)),
-                new DOPerson(cursor.getInt(cursor.getColumnIndex("p" + PK)),
+                new DOPerson(cursor.getInt(cursor.getColumnIndex(PERSONID)),
                         cursor.getString(cursor.getColumnIndex(PRENAME)), cursor.getString(cursor.getColumnIndex(SURNAME))),
                 new DOLocation(
-                        cursor.getInt(cursor.getColumnIndex("l" + PK)),
+                        cursor.getInt(cursor.getColumnIndex(STARTLOCATION)),
                         cursor.getString(cursor.getColumnIndex(STREET)),
                         cursor.getString(cursor.getColumnIndex(POSTALCODE)),
                         cursor.getString(cursor.getColumnIndex(PLACE)),

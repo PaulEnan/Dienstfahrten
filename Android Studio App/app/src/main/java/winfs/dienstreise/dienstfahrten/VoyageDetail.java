@@ -56,7 +56,6 @@ public class VoyageDetail extends AppCompatActivity {
     }
 
     private DOSession loadSession() throws DienstfahrtenException {
-        //TODO load session with id
         int passedItemId = getIntent().getIntExtra(
                 "winfs.dienstreise.dienstfahrten.SESSIONDATA",
                 -1);

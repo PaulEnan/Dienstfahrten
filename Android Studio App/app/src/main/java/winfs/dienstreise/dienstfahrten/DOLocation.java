@@ -65,4 +65,9 @@ public class DOLocation {
     void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return postCode + " " + city + System.lineSeparator() + street + " " + streetNumber;
+    }
 }

@@ -5,14 +5,14 @@ import java.util.Date;
 public class DODestination {
 
     int id;
-    int sleepCosts;
-    int foodCosts;
-    int tripExtraCosts;
+    double sleepCosts;
+    double foodCosts;
+    double tripExtraCosts;
     Date arrivalDate;
     Date departureDate;
     DOLocation location;
 
-    public DODestination(int sleepCosts, int foodCosts, int tripExtraCosts,
+    public DODestination(double sleepCosts, double foodCosts, double tripExtraCosts,
                          DOLocation location, Date arrivalDate, Date departureDate) {
         this.sleepCosts = sleepCosts;
         this.foodCosts = foodCosts;
@@ -22,7 +22,7 @@ public class DODestination {
         this.departureDate = departureDate;
     }
 
-    public DODestination(int id, int sleepCosts, int foodCosts, int tripExtraCosts,
+    public DODestination(int id, double sleepCosts, double foodCosts, double tripExtraCosts,
                          DOLocation location, Date arrivalDate, Date departureDate) {
         this.id = id;
         this.sleepCosts = sleepCosts;

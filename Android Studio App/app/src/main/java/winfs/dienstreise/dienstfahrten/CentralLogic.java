@@ -34,7 +34,6 @@ public class CentralLogic {
         if(id != -1) {
             try {
                 curSession =  saveLoadHandler.Load(id);
-                return curSession;
             } catch (Exception ex) {
                 throw new DienstfahrtenException(ex.getMessage());
             }
@@ -42,6 +41,7 @@ public class CentralLogic {
             curSession = new DOSession();
         }
 
+        return curSession;
     }
 
     public String[] calculateCosts() throws DienstfahrtenException {

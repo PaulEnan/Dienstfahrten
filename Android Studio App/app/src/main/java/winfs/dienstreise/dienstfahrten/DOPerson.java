@@ -20,4 +20,9 @@ class DOPerson {
     public void setID(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return prename + " " + surname;
+    }
 }

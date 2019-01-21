@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 public class VoyageDetail extends AppCompatActivity {
 
@@ -24,37 +25,41 @@ public class VoyageDetail extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    SessionData session;
+    DOSession session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        session = loadSession();
+        try {
+            session = loadSession();
+            setContentView(R.layout.activity_detail_view);
 
-        setContentView(R.layout.activity_detail_view);
+            Toolbar toolbar = findViewById(R.id.title_toolbar);
+            setSupportActionBar(toolbar);
+            // Create the adapter that will return a fragment for each of the
+            // primary sections of the activity.
+            mSectionsPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), session, this);
 
-        Toolbar toolbar = findViewById(R.id.title_toolbar);
-        setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), session, this);
+            // Set up the ViewPager with the sections adapter.
+            mViewPager = findViewById(R.id.container);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+            TabLayout tabLayout = findViewById(R.id.tabsPanel);
 
-        TabLayout tabLayout = findViewById(R.id.tabsPanel);
-
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+            mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        } catch (DienstfahrtenException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Reise konnte nicht geladen werden", Toast.LENGTH_LONG);
+        }
     }
 
-    private SessionData loadSession() {
+    private DOSession loadSession() throws DienstfahrtenException {
         //TODO load session with id
-        int passedItemId = getIntent().getIntExtra (
+        int passedItemId = getIntent().getIntExtra(
                 "winfs.dienstreise.dienstfahrten.SESSIONDATA",
                 -1);
-        return null;
+        return Overview.LOGIC.LoadSession(passedItemId);
     }
 }

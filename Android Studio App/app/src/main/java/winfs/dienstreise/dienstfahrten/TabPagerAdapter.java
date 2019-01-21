@@ -6,10 +6,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 public class TabPagerAdapter extends FragmentPagerAdapter{
-        SessionData session;
+        DOSession session;
         VoyageDetail vd;
 
-        public TabPagerAdapter(FragmentManager fm, SessionData session, VoyageDetail vd) {
+        public TabPagerAdapter(FragmentManager fm, DOSession session, VoyageDetail vd) {
             super(fm);
             this.session = session;
             this.vd = vd;
@@ -37,17 +37,17 @@ public class TabPagerAdapter extends FragmentPagerAdapter{
             if(position == 0) {
                 return vd.getString(R.string.fragment_start);
             } else if (position == getCount() - 1) {
-                return vd.getString(R.string.fragment_destination);
+                return vd.getString(R.string.fragment_summary);
             } else if (position == getCount() - 2) {
                 return vd.getString(R.string.fragment_final_destination);
             } else {
-                return vd.getString(R.string.fragment_summary);
+                return vd.getString(R.string.fragment_destination);
             }
         }
 
         @Override
         public int getCount() {
             // Every Station + the summary tab
-            return session.getStations().size() + 1;
+            return session.getStations().size() + 2;
         }
 }

@@ -13,9 +13,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.LinkedList;
 
 public class Overview extends AppCompatActivity {
+    public static CentralLogic LOGIC;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,45 +45,28 @@ public class Overview extends AppCompatActivity {
         });
 
         ListView voyagesListView = findViewById(R.id.voyagesListView);
+        DatabaseHelper db = new DatabaseHelper(this.getApplicationContext());
+        db.onUpgrade(db.getWritableDatabase(), 0, 1);
+        boolean greatSuccess = db.Save(new DOSession(0, new LinkedList<DODestination>()
+        {{
+                add(new DODestination(5,1,2,new DOLocation(
+                        "NotkeStraße",
+                        "22607",
+                        "Hamburg",
+                        15),
+                        new Date(),
+                        new Date()));
+        }}, "Zu Arbeit", new DOPerson("Felix", "Miertsch"),
+                new DOLocation(
+                        "Hohe Straße",
+                        "21073",
+                        "Hamburg",
+                        90),
+                new Date()));
 
+        LOGIC = new CentralLogic(new ApiUser(), db);
 
-
-        // TODO Fahrten Laden und nicht statische nehmen
-        LinkedList<SessionData> data = new LinkedList<SessionData>() {{
-            add(
-                    new SessionData(
-                            new LinkedList<Location>() {
-                                {
-                                    //add("Hamburg");
-                                    //add("Neuhaus");
-                                }
-                            },
-
-                            50,
-                            60,
-                            "Test1",
-                            "Johnny Generic",
-                            "Test run"
-                    )
-            );
-            add(
-                    new SessionData(
-                            new LinkedList<Location>() {
-                                {
-                               //     add("Bahrenfeld");
-                                    //add("Bergedorf");
-                                }
-                            },
-
-                            50,
-                            60,
-                            "Test2",
-                            "Jane Generic",
-                            "Test run"
-                    )
-            );
-        }};
-        final VoyageAdapter voyageAdapter = new VoyageAdapter(this, data);
+        final VoyageAdapter voyageAdapter = new VoyageAdapter(this, LOGIC.sessions);
         voyagesListView.setAdapter(voyageAdapter);
 
         voyagesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -89,7 +75,7 @@ public class Overview extends AppCompatActivity {
                 Intent openVoyageDetail = new Intent(getApplicationContext(), VoyageDetail.class);
                 openVoyageDetail.putExtra(
                         "winfs.dienstreise.dienstfahrten.SESSIONDATA",
-                        voyageAdapter.getItemId(position)
+                        LOGIC.sessions.get(position).id
                 );
                 startActivity(openVoyageDetail);
             }

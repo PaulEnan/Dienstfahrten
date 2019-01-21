@@ -24,7 +24,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="50dp"
-        android:text="@string/summary_date"
+        android:text="Von:"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -46,7 +46,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="80dp"
-        android:text="@string/summary_date"
+        android:text="Bis:"
         android:textSize="16sp"
         android:textStyle="bold" />
 

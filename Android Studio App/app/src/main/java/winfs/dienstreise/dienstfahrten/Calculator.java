@@ -16,9 +16,10 @@ public class Calculator {
         this.apiUser = apiUser;
     }
 
-    public String caclculateVariableCostsForMultipleStations(String[] stations, double var)
+    public String caclculateVariableCostsForMultipleStations(String[] stations)
             throws DienstfahrtenException {
         String result = "0";
+        int var = 0;
         for (int i = 0; i < stations.length - 1; i++) {
             double currentResult = Double.parseDouble(result);
             String nextStationResult = calculateVariableCosts(stations[i], stations[i + 1], var);

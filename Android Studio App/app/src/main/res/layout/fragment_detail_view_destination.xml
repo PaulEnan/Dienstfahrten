@@ -5,6 +5,96 @@
     android:layout_height="match_parent">
 
 
+    <EditText
+        android:id="@+id/editTextDestHouseNo"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="260dp"
+        android:inputType="number"
+        android:text="Hausnummer" />
+
+    <EditText
+        android:id="@+id/editTextFoodCosts"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="310dp"
+        android:inputType="number"
+        android:text="Kosten (Essen)" />
+
+    <EditText
+        android:id="@+id/editTextSleepCosts"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="360dp"
+        android:inputType="number"
+        android:text="Kosten (Übernachtung)" />
+
+    <EditText
+        android:id="@+id/editTextExtraCosts"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="410dp"
+        android:inputType="number"
+        android:text="Extrakosten" />
+
+    <EditText
+        android:id="@+id/editTextDestCity"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="110dp"
+        android:inputType="textPostalAddress|date"
+        android:text="Ort" />
+
+    <EditText
+        android:id="@+id/editTextArrivalDate"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:inputType="date"
+        android:text="Ankunft" />
+
+    <EditText
+        android:id="@+id/editTextDepartureDate"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:inputType="date"
+        android:text="Abfahrt" />
+
+    <EditText
+        android:id="@+id/editTextDestPostalCode"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="160dp"
+        android:inputType="textPostalAddress"
+        android:text="Postleitzahl" />
+
+    <EditText
+        android:id="@+id/editTextDestStreet"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="210dp"
+        android:inputType="textPostalAddress"
+        android:text="Straße" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addTabFloatingActionButton"
         android:layout_width="wrap_content"

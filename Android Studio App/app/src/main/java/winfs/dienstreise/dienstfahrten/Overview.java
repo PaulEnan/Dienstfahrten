@@ -49,20 +49,11 @@ public class Overview extends AppCompatActivity {
         db.onUpgrade(db.getWritableDatabase(), 0, 1);
         boolean greatSuccess = db.Save(new DOSession(0, new LinkedList<DODestination>()
         {{
-                add(new DODestination(5,1,2,new DOLocation(
-                        "NotkeStraße",
-                        "22607",
-                        "Hamburg",
-                        15),
-                        new Date(),
-                        new Date()));
+                add(new DODestination(5,1,2,
+                        "NotkeStraße 15 22607 Hamburg"));
         }}, "Zu Arbeit", new DOPerson("Felix", "Miertsch"),
-                new DOLocation(
-                        "Hohe Straße",
-                        "21073",
-                        "Hamburg",
-                        90),
-                new Date()));
+                        "Hohe Straße 90 21073 Hamburg",
+                new Date(), 5, 7));
 
         LOGIC = new CentralLogic(new ApiUser(), db);
 

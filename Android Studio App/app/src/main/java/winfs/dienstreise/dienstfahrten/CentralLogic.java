@@ -44,8 +44,7 @@ public class CentralLogic {
                 throw new DienstfahrtenException(ex.getMessage());
             }
         } else {
-            curSession = new DOSession(-1, new LinkedList<DODestination>(), "", new DOPerson("", ""),
-                    null, new Date());
+            curSession = new DOSession();
         }
         return curSession;
     }
@@ -54,7 +53,7 @@ public class CentralLogic {
         DODestination[] arr = curSession.getStations().toArray(new DODestination[curSession.getStations().size()]);
         String[] stationArr = new String[arr.length];
         for (int i = 0; i < arr.length; i++) {
-            stationArr[i] = getLocationString(arr[i].location);
+            stationArr[i] = arr[i].location;
         }
         String result = calculator.caclculateVariableCostsForMultipleStations(stationArr);
         if (result.contains("||")) {
@@ -103,24 +102,5 @@ public class CentralLogic {
 
     public void changeTitle(String title) {
         curSession.setTitle(title);
-    }
-
-    private String getLocationString(DOLocation location) {
-        StringBuilder sb = new StringBuilder();
-        if (location.getStreet() != null
-                && !location.getStreet().equals("")) {
-            sb.append(location.getStreet());
-            if (location.getStreetNumber() > -1) {
-                sb.append(" " + location.getStreetNumber());
-            }
-        }
-        if (location.getCity() != null
-                && !location.getCity().equals("")) {
-            if (!sb.toString().equals("")) {
-                sb.append(", ");
-            }
-            sb.append(location.getCity());
-        }
-        return sb.toString();
     }
 }

@@ -10,12 +10,13 @@ import java.util.List;
  */
 public class DOSession {
 
+    int duration;
     boolean isDummy;
     int id;
     List<DODestination> stations;
     String title;
     DOPerson person;
-    DOLocation startLocation;
+    String startLocation;
     Date startDate;
     double variableCosts;
 
@@ -25,7 +26,7 @@ public class DOSession {
     }
 
     public DOSession(int id, List<DODestination> stations, String title, DOPerson person,
-                     DOLocation startLocation, Date startDate) {
+                     String startLocation, Date startDate, int duration, double variableCosts) {
         this.id = id;
         this.stations = stations;
         this.title = title;
@@ -33,6 +34,8 @@ public class DOSession {
         this.startLocation = startLocation;
         this.startDate = startDate;
         isDummy = false;
+        this.duration = duration;
+        this.variableCosts = variableCosts;
     }
 
     public List<DODestination> getStations() {
@@ -80,12 +83,9 @@ public class DOSession {
         return costs;
     }
 
-    private double getVariableCosts() {
+    private double getVariableCosts() { return variableCosts; }
 
-        return variableCosts;
-    }
-
-    public DOLocation getLastLocation() {
+    public String getLastLocation() {
         return stations.get(stations.size() - 1).location;
     }
 }

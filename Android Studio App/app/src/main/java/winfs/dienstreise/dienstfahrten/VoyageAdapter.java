@@ -63,11 +63,7 @@ public class VoyageAdapter extends BaseAdapter {
         TextView totalCostsTextView =  v.findViewById(R.id.totalCostsTextView);
 
         String title = voyage.title;
-        String tour = voyage.startLocation.city + " -> ";
-        for (DODestination dest : voyage.getStations()) {
-            tour += dest.location.city + " -> ";
-        }
-        tour = tour.substring(0, tour.length() - 4);
+        String tour = voyage.startLocation + " zu " + voyage.getStations().size() + " Orten";
         String date = GERMANDATEFORMAT.format(voyage.startDate);
         String totalCosts = String.format(Locale.GERMAN, "%10.2f €", voyage.getFinalCosts());
 

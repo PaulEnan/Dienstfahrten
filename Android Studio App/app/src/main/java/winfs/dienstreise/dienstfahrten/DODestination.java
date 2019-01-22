@@ -8,29 +8,23 @@ public class DODestination {
     double sleepCosts;
     double foodCosts;
     double tripExtraCosts;
-    Date arrivalDate;
-    Date departureDate;
-    DOLocation location;
+    String location;
 
     public DODestination(double sleepCosts, double foodCosts, double tripExtraCosts,
-                         DOLocation location, Date arrivalDate, Date departureDate) {
+                         String location) {
         this.sleepCosts = sleepCosts;
         this.foodCosts = foodCosts;
         this.tripExtraCosts = tripExtraCosts;
         this.location = location;
-        this.arrivalDate = arrivalDate;
-        this.departureDate = departureDate;
     }
 
     public DODestination(int id, double sleepCosts, double foodCosts, double tripExtraCosts,
-                         DOLocation location, Date arrivalDate, Date departureDate) {
+                         String location) {
         this.id = id;
         this.sleepCosts = sleepCosts;
         this.foodCosts = foodCosts;
         this.tripExtraCosts = tripExtraCosts;
         this.location = location;
-        this.arrivalDate = arrivalDate;
-        this.departureDate = departureDate;
     }
 
     void setId(int id) {

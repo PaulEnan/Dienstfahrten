@@ -14,11 +14,18 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * @author Paul Enan
+ * Implementation of IApiUser, as used in our app
+ * @author winf101441
  */
 public class ApiUser implements IApiUser {
 
+    /**
+     * key, used to access google map api
+     */
     private final String key = "AIzaSyBWJ2xJ8KM-oP4sPigyP6vE2htwpJX39_o";
+    /**
+     * url of google maps api service
+     */
     private final String googleUrl = "https://maps.googleapis.com/maps/api/";
 
     @Override
@@ -97,6 +104,12 @@ public class ApiUser implements IApiUser {
         return null;
     }
 
+    /**
+     * creates a query for the api service
+     * @param url the service, as distancematrix or autocompleter
+     * @param queryString the queries, as a String
+     * @return A String that can be used to create a JSONObject
+     */
     private String makeQuery(String url, String queryString) {
         if ("".equals(url)) {
             return "";
@@ -115,10 +128,21 @@ public class ApiUser implements IApiUser {
         }
     }
 
+    /**
+     * Makes sure the String actually fits the query by filtering out spaces
+     * @param name
+     * @return
+     */
     private String makeStringQueryCompliant(String name) {
-        return name.replace(" ", "+"); //muss evtl noch ausgebaut werden. SOnderzeichen?
+        return name.replace(" ", "+");
     }
 
+    /**
+     * creates a query string out of a map of parameternames and values
+     * @param parameters the map
+     * @return the string
+     * @throws UnsupportedEncodingException might get thrown if the encoding doesn't work
+     */
     private String setParameterString(Map<String, String> parameters)
             throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();

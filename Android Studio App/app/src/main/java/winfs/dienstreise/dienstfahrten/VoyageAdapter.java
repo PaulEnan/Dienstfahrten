@@ -7,22 +7,32 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 public class VoyageAdapter extends BaseAdapter {
-    LayoutInflater mInflater;
-    LinkedList<SessionData> voyages;
 
-    public VoyageAdapter(Context c, LinkedList<SessionData> voyages) {
-        Collections.sort(voyages, new Comparator<SessionData>() {
-            @Override
-            public int compare(SessionData o1, SessionData o2) {
-                return o1.getStations().toString().compareTo(o2.getStations().toString());
-            }
-        });
+    static SimpleDateFormat GERMANDATEFORMAT = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
+    LayoutInflater mInflater;
+    List<DOSession> voyages;
+
+    public VoyageAdapter(Context c, List<DOSession> voyages) {
+        if (voyages != null){
+            Collections.sort(voyages, new Comparator<DOSession>() {
+                @Override
+                public int compare(DOSession o1, DOSession o2) {
+                    return o1.startDate.compareTo(o2.startDate);
+                }
+            });
+        }
+        else {
+            voyages = new LinkedList<>();
+        }
         this.voyages = voyages;
         mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -44,23 +54,24 @@ public class VoyageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-         SessionData voyage = voyages.get(position);
+         DOSession voyage = voyages.get(position);
         View v = mInflater.inflate(R.layout.voyage_details_adapter, null);
 
-        TextView occassionTextView = v.findViewById(R.id.occassionTextView);
+        TextView titleTextView = v.findViewById(R.id.occassionTextView);
         TextView tourTextView = v.findViewById(R.id.tourTextView);
         TextView dateTextView =  v.findViewById(R.id.dateTextView);
         TextView totalCostsTextView =  v.findViewById(R.id.totalCostsTextView);
 
-        String occassion = "";
-        String tour = "";
-        for (String s : voyage.getStations()) {
-            tour += s + " -> ";
+        String title = voyage.title;
+        String tour = voyage.startLocation.city + " -> ";
+        for (DODestination dest : voyage.getStations()) {
+            tour += dest.location.city + " -> ";
         }
-        String date = new Date().toString();
-        String totalCosts = String.format("%10.2f €", voyage.getFinalCosts());
+        tour = tour.substring(0, tour.length() - 4);
+        String date = GERMANDATEFORMAT.format(voyage.startDate);
+        String totalCosts = String.format(Locale.GERMAN, "%10.2f €", voyage.getFinalCosts());
 
-        occassionTextView.setText(occassion);
+        titleTextView.setText(title);
         tourTextView.setText(tour);
         dateTextView.setText(date);
         totalCostsTextView.setText(totalCosts);

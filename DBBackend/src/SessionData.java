@@ -1,8 +1,9 @@
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  *
- * @author Paul Enan
+ * @author Joachim Borgloh
  */
 public class SessionData {
 	private Integer id;
@@ -11,33 +12,39 @@ public class SessionData {
 	private double fixCosts;
 	private double variableCosts;
 	private String title;
-	private String person;
-	private String cause;
+	private Set<Names> names; //vorher String und person
+	private String ocassion; //refactor cause
+	private String date; //neu
+	private String duration; //neu
 
 	public SessionData(LinkedList<Location> stations, double fixCosts, double variableCosts, String title,
-			String person, String cause) {
+			Set<Names> names, String ocassion, String date, String duration) {
 		this.stations = (LinkedList<Location>) stations.clone();
 		this.fixCosts = fixCosts;
 		this.variableCosts = variableCosts;
 		this.title = title;
-		this.person = person;
-		this.cause = cause;
+		this.names = names;
+		this.ocassion = ocassion;
+		this.date = date;
+		this.duration = duration;
 	}
 	
 	public SessionData(int id, LinkedList<Location> stations, double fixCosts, double variableCosts, String title,
-			String person, String cause) {
+			Set<Names> names, String ocassion, String date, String duration) {
 		this.id = id;
 		this.stations = (LinkedList<Location>) stations.clone();
 		this.fixCosts = fixCosts;
 		this.variableCosts = variableCosts;
 		this.title = title;
-		this.person = person;
-		this.cause = cause;
+		this.names = names;
+		this.ocassion = ocassion;
+		this.date = date;
+		this.duration = duration;
 	}
 
 	@Override
 	public SessionData clone() {
-		return new SessionData((LinkedList<Location>) stations.clone(), fixCosts, variableCosts, title, person, cause);
+		return new SessionData((LinkedList<Location>) stations.clone(), fixCosts, variableCosts, title, names, ocassion, date, duration);
 	}
 
 	public LinkedList<Location> getStations() {
@@ -84,20 +91,24 @@ public class SessionData {
 		this.title = title;
 	}
 
-	public String getPerson() {
-		return this.person;
+	public Set<Names> getNames() {
+		return this.names;
 	}
 
-	public void setPerson(String person) {
-		this.person = person;
+	public void addName(Names name) {
+		this.names.add(name);
+	}
+	
+	public void removeName(Names name) {
+		this.names.remove(name);
 	}
 
-	public String getCause() {
-		return this.cause;
+	public String getOcassion() {
+		return this.ocassion;
 	}
 
-	public void setCause(String cause) {
-		this.cause = cause;
+	public void setOcassion(String cause) {
+		this.ocassion = cause;
 	}
 
 	public Integer getId() {
@@ -106,5 +117,21 @@ public class SessionData {
 	
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
 	};
 }

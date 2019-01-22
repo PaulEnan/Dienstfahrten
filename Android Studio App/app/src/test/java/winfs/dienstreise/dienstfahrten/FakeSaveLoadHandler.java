@@ -1,14 +1,22 @@
 package winfs.dienstreise.dienstfahrten;
 
+import java.util.List;
+
 /**
  *
  * @author Paul Enan
  */
 public class FakeSaveLoadHandler implements ISaveLoadHandler {
 
-    @Override
-    public void Save(DOSession session) throws SaveLoadException {
+    private List<DOSession> sessions;
 
+    public FakeSaveLoadHandler(List<DOSession> sessions) {
+        this.sessions = sessions;
+    }
+
+    @Override
+    public boolean Save(DOSession session) {
+        return false;
     }
 
     @Override
@@ -17,7 +25,7 @@ public class FakeSaveLoadHandler implements ISaveLoadHandler {
     }
 
     @Override
-    public DOSession[] getAllSessions() throws SaveLoadException {
-        return new DOSession[0];
+    public List<DOSession> getAllSessions() throws SaveLoadException {
+        return sessions;
     }
 }

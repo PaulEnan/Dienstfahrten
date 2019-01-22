@@ -17,6 +17,7 @@ public class DOSession {
     DOPerson person;
     DOLocation startLocation;
     Date startDate;
+    double variableCosts;
 
     public DOSession() {
         isDummy = true;
@@ -66,6 +67,10 @@ public class DOSession {
         return getVariableCosts() + getFixedCosts();
     }
 
+    public void setVariableCosts(double costs) {
+        this.variableCosts = costs;
+    }
+
     private double getFixedCosts() {
         double costs = 0;
         for (DODestination dest : stations) {
@@ -77,7 +82,7 @@ public class DOSession {
 
     private double getVariableCosts() {
 
-        return 0;
+        return variableCosts;
     }
 
     public DOLocation getLastLocation() {

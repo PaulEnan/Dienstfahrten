@@ -145,11 +145,12 @@
 
     <TextView
         android:id="@+id/startTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="226dp"
+        android:layout_height="41dp"
         android:layout_alignTop="@+id/TextView1"
         android:layout_alignEnd="@+id/dateTextView"
-        android:text="lalala" />
+        android:text="lalala"
+        android:textAlignment="viewEnd" />
 
     <TextView
         android:id="@+id/intermediateTextView"
@@ -162,12 +163,13 @@
 
     <TextView
         android:id="@+id/goalTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="227dp"
+        android:layout_height="54dp"
         android:layout_alignTop="@+id/TextView3"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="25dp"
-        android:text="lalala" />
+        android:text="lalala"
+        android:textAlignment="viewEnd" />
 
     <TextView
         android:id="@+id/kilometresTextView"

@@ -12,8 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/colorAccent" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@android:drawable/ic_input_add"/>
 
     <EditText
         android:id="@+id/editTextTitle"
@@ -56,44 +57,21 @@
         android:hint="Startdatum (z.B. 13.01.2019 15:00" />
 
     <EditText
-        android:id="@+id/editTextPostalCode"
+        android:id="@+id/editTextDuration"
         android:layout_width="332dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="210dp"
-        android:inputType="textPostalAddress"
-        android:hint="Postleitzahl (Startpunkt)" />
+        android:hint="Dauer"/>
 
-    <EditText
-        android:id="@+id/editTextCity"
+    <android.support.v7.widget.AppCompatAutoCompleteTextView
+        android:id="@+id/autoCompleteStartLocation"
         android:layout_width="332dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="260dp"
-        android:inputType="textAutoComplete|textPostalAddress"
-        android:hint="Ort (Startpunkt)" />
-
-    <EditText
-        android:id="@+id/editTextStreet"
-        android:layout_width="332dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="310dp"
-        android:inputType="textAutoComplete|textPostalAddress"
-        android:hint="Straße (Startpunkt)" />
-
-    <EditText
-        android:id="@+id/editTextHouseNo"
-        android:layout_width="332dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="360dp"
-        android:inputType="textPostalAddress|number|numberSigned"
-        android:hint="Hausnummer (Startpunkt)" />
-
+        android:hint="Startpunkt"/>
 
 </RelativeLayout>

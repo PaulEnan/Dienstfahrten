@@ -70,7 +70,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
         String createTableDestination = "CREATE TABLE " + DESTINATIONTABLE + " ( d" + PK
                 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SLEEPCOSTS
                 + " INTEGER, " + FOODCOSTS + " INTEGER, " + TRIPEXTRACOSTS
-                + " INTEGER, " + DESTLOCATION + " INTEGER)";
+                + " INTEGER, " + DESTLOCATION + " TEXT, " + OCCASION + " TEXT)";
 
         String createTableSessionDest = "CREATE TABLE " + SESSIONDESTTABLE + " (" + SESSIONID
                 + " INTEGER, " + DESTINATIONID + " INTEGER, FOREIGN KEY ("
@@ -127,6 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
                 cv.put(SLEEPCOSTS, dest.sleepCosts);
                 cv.put(TRIPEXTRACOSTS, dest.tripExtraCosts);
                 cv.put(DESTLOCATION, dest.location);
+                cv.put(OCCASION, dest.occasion);
                 id = (int) db.insert(DESTINATIONTABLE, null, cv);
                 dest.setId(id);
                 cv.clear();
@@ -206,7 +207,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
                             cursor.getInt(cursor.getColumnIndex(SLEEPCOSTS)),
                             cursor.getInt(cursor.getColumnIndex(FOODCOSTS)),
                             cursor.getInt(cursor.getColumnIndex(TRIPEXTRACOSTS)),
-                            cursor.getString(cursor.getColumnIndex(DESTLOCATION))
+                            cursor.getString(cursor.getColumnIndex(DESTLOCATION)),
+                            cursor.getString(cursor.getColumnIndex(OCCASION))
                     )
             );
         }

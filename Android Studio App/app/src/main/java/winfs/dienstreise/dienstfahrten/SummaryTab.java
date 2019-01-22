@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 public class SummaryTab extends Fragment {
 
     DOSession session;
@@ -32,13 +34,13 @@ public class SummaryTab extends Fragment {
         headingTextView.setText("Zusammenfassung für " + session.title);
         dateTextView.setText(VoyageAdapter.GERMANDATEFORMAT.format(session.startDate));
         personTextView.setText(session.person.toString());
-        startTextView.setText(session.startLocation.toString());
+        startTextView.setText(session.startLocation);
         intermediateTextView.setText(session.stations.size() - 1 + " Zwischenziele");
-        goalTextView.setText(session.getLastLocation().toString());
-        kilometresTextView.setText("aa");
-        variableCostsTextView.setText("Zusammenfassung für " + session.title);
-        fixCostsTextView.setText("Zusammenfassung für " + session.title);
-        totalCostsTextView.setText(String.format("%10.2$f", session.getFinalCosts()));
+        goalTextView.setText(session.getLastLocation());
+        kilometresTextView.setText(String.format(Locale.GERMAN,"%10.2f", (session.getVariableCosts() / .3)));
+        variableCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getVariableCosts()));
+        fixCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFixedCosts()));
+        totalCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFinalCosts()));
 
 
         return startTab;

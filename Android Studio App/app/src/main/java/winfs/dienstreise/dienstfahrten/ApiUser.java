@@ -23,17 +23,13 @@ public class ApiUser implements IApiUser {
      * key, used to access google map api
      */
     private final String key = "AIzaSyBWJ2xJ8KM-oP4sPigyP6vE2htwpJX39_o";
-    /**
-     * url of google maps api service
-     */
-    private final String googleUrl = "https://maps.googleapis.com/maps/api/";
 
     @Override
     public JSONObject getDistance(String origin, String destination) {
         String originAsQuery = makeStringQueryCompliant(origin);
         String destinationAsQuery = makeStringQueryCompliant(destination);
         String url = "distancematrix/json";
-        HashMap map = new HashMap();
+        HashMap<String, String> map = new HashMap<>();
         map.put("origins", originAsQuery);
         map.put("destinations", destinationAsQuery);
         map.put("language", "de");
@@ -59,7 +55,7 @@ public class ApiUser implements IApiUser {
 
         String nameAsQuery = makeStringQueryCompliant(name);
         String url = "place/findplacefromtext/json";
-        HashMap map = new HashMap();
+        HashMap<String, String> map = new HashMap<String, String>();
         map.put("input", nameAsQuery);
         map.put("inputtype", "textquery");
         map.put("fields", "formatted_address");
@@ -84,7 +80,7 @@ public class ApiUser implements IApiUser {
     public JSONObject getAutoCompleter(String name) {
         String nameAsQuery = makeStringQueryCompliant(name);
         String url = "place/autocomplete/json";
-        HashMap map = new HashMap();
+        HashMap<String, String> map = new HashMap<>();
         map.put("input", nameAsQuery);
         map.put("language", "de");
         map.put("key", key);
@@ -116,6 +112,11 @@ public class ApiUser implements IApiUser {
         }
         try {
             URL completeUrl;
+            /*
+      url of google maps api service
+     */ /**
+             * url of google maps api service
+             */String googleUrl = "https://maps.googleapis.com/maps/api/";
             String urlString = googleUrl + url + (!"".equals(queryString) ? ("?" + queryString) : "");
             completeUrl = new URL(urlString);
             HttpURLConnection con = (HttpURLConnection) completeUrl.openConnection();

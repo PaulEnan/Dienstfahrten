@@ -58,8 +58,6 @@ public class DOSession {
 
     public void setTitle(String title) { this.title = title; }
 
-    public DOPerson getPerson() { return this.person; }
-
     public void setPerson(DOPerson person) { this.person = person; }
 
     public void setId(int id) {
@@ -74,7 +72,7 @@ public class DOSession {
         this.variableCosts = costs;
     }
 
-    private double getFixedCosts() {
+    double getFixedCosts() {
         double costs = 0;
         for (DODestination dest : stations) {
             costs += dest.tripExtraCosts + dest.sleepCosts + dest.foodCosts;
@@ -83,7 +81,7 @@ public class DOSession {
         return costs;
     }
 
-    private double getVariableCosts() { return variableCosts; }
+    double getVariableCosts() { return variableCosts; }
 
     public String getLastLocation() {
         return stations.get(stations.size() - 1).location;

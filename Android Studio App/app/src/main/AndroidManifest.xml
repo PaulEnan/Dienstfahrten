@@ -22,7 +22,7 @@
         <activity
             android:name=".VoyageDetail"
             android:label="@string/new_voyage"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

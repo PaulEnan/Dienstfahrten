@@ -50,7 +50,7 @@ public class Overview extends AppCompatActivity {
         boolean greatSuccess = db.Save(new DOSession(0, new LinkedList<DODestination>()
         {{
                 add(new DODestination(5,1,2,
-                        "NotkeStraße 15 22607 Hamburg"));
+                        "NotkeStraße 15 22607 Hamburg", "SoftShip"));
         }}, "Zu Arbeit", new DOPerson("Felix", "Miertsch"),
                         "Hohe Straße 90 21073 Hamburg",
                 new Date(), 5, 7));

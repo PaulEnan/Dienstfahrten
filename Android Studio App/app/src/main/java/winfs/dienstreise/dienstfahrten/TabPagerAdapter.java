@@ -3,11 +3,9 @@ package winfs.dienstreise.dienstfahrten;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.view.ViewGroup;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
-public class TabPagerAdapter extends FragmentPagerAdapter {
+public class TabPagerAdapter extends FragmentStatePagerAdapter {
     DOSession session;
     VoyageDetail vd;
 
@@ -26,13 +24,14 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
             return st;
         }
 
-        if (position == getCount() - 1) {
+        if (position == (getCount() - 1)) {
             SummaryTab st = new SummaryTab();
             st.setSession(session);
             return st;
         }
         DestinationTab dt = new DestinationTab();
-        dt.setSession(session);
+        dt.setDest(session.getStations().get(position - 1));
+        dt.setIsOnly(session.getStations().size() == 1);
         return dt;
     }
 
@@ -43,9 +42,9 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         if (position == 0) {
             return vd.getString(R.string.fragment_start);
-        } else if (position == getCount() - 1) {
+        } else if (position == (getCount() - 1)) {
             return vd.getString(R.string.fragment_summary);
-        } else if (position == getCount() - 2) {
+        } else if (position == (getCount() - 2)) {
             return vd.getString(R.string.fragment_final_destination);
         } else {
             return vd.getString(R.string.fragment_destination);
@@ -54,16 +53,10 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        // Every Station + the summary tab
-        return session.getStations().size() + 2;
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        FragmentManager manager = ((Fragment)object).getFragmentManager();
-        FragmentTransaction trans = manager.beginTransaction();
-        session.removeStation(position);
-        trans.remove((Fragment)object);
-        trans.commit();
+        // Every Station + the summary tab + start tab
+        if(!session.isDummy){
+            return session.getStations().size() + 2;
+        }
+        return 3;
     }
 }

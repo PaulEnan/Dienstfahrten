@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <EditText
-        android:id="@+id/editTextDestHouseNo"
-        android:layout_width="332dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="260dp"
-        android:inputType="number"
-        android:hint="Hausnummer" />
 
     <EditText
         android:id="@+id/editTextFoodCosts"
@@ -22,9 +11,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="310dp"
-        android:inputType="number"
-        android:hint="Kosten (Essen)" />
+        android:layout_marginTop="10dp"
+        android:hint="Kosten (Essen)"
+        android:inputType="number" />
 
     <EditText
         android:id="@+id/editTextSleepCosts"
@@ -32,9 +21,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="360dp"
-        android:inputType="number"
-        android:hint="Kosten (Übernachtung)" />
+        android:layout_marginTop="60dp"
+        android:hint="Kosten (Übernachtung)"
+        android:inputType="number" />
 
     <EditText
         android:id="@+id/editTextExtraCosts"
@@ -42,62 +31,31 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="410dp"
-        android:inputType="number"
-        android:hint="Extrakosten" />
-
-    <EditText
-        android:id="@+id/editTextDestCity"
-        android:layout_width="332dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="110dp"
-        android:inputType="textPostalAddress|date"
-        android:hint="Ort" />
+        android:hint="Extrakosten"
+        android:inputType="number" />
 
     <EditText
-        android:id="@+id/editTextArrivalDate"
-        android:layout_width="332dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:inputType="date"
-        android:hint="Ankunft" />
-
-    <EditText
-        android:id="@+id/editTextDepartureDate"
-        android:layout_width="332dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:inputType="date"
-        android:hint="Abfahrt" />
-
-    <EditText
-        android:id="@+id/editTextDestPostalCode"
+        android:id="@+id/editTextOccassion"
         android:layout_width="332dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="160dp"
-        android:inputType="textPostalAddress"
-        android:hint="Postleitzahl" />
+        android:hint="Anlass"
+        android:inputType="text" />
 
-    <EditText
-        android:id="@+id/editTextDestStreet"
+    <android.support.v7.widget.AppCompatAutoCompleteTextView
+        android:id="@+id/autoCompleteDestLocation"
         android:layout_width="332dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="210dp"
-        android:inputType="textPostalAddress"
-        android:hint="Straße" />
+        android:hint="Lokation" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/addTabFloatingActionButton"
+        android:id="@+id/addDest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -107,7 +65,7 @@
         android:src="@android:drawable/ic_input_add" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/addTabFloatingActionButton2"
+        android:id="@+id/removeDest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

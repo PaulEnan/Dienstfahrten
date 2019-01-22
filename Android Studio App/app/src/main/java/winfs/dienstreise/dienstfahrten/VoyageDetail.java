@@ -34,9 +34,6 @@ public class VoyageDetail extends AppCompatActivity {
         try {
             session = loadSession();
             setContentView(R.layout.activity_detail_view);
-
-            Toolbar toolbar = findViewById(R.id.title_toolbar);
-            setSupportActionBar(toolbar);
             // Create the adapter that will return a fragment for each of the
             // primary sections of the activity.
             mSectionsPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), session, this);

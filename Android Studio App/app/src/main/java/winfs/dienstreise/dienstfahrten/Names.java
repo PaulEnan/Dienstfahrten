@@ -1,4 +1,6 @@
-
+/*
+ * @author Joachim Borgloh
+ */
 public class Names {
 	private Integer id;
 	private String name;

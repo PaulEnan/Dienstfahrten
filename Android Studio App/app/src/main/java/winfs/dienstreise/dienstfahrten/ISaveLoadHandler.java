@@ -4,7 +4,7 @@ import java.util.Set;
 
 /**
  *
- * @author Paul Enan + Joachim Borgloh
+ * @author winf101441 + Joachim Borgloh
  */
 public interface ISaveLoadHandler {
     public void Save(SessionData session) throws SaveLoadException;

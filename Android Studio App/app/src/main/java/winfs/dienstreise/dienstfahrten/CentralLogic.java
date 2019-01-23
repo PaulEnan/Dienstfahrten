@@ -1,6 +1,14 @@
 package winfs.dienstreise.dienstfahrten;
 
-import java.util.Date;
+import android.content.Context;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,7 +30,7 @@ public class CentralLogic {
             sessions = saveLoadHandler.getAllSessions();
         } catch (Exception ex) {
         }
-        if(sessions == null) {
+        if (sessions == null) {
             sessions = new LinkedList<>();
         }
         if (sessions.size() >= 1) {
@@ -37,9 +45,9 @@ public class CentralLogic {
     }
 
     public DOSession LoadSession(int id) throws DienstfahrtenException {
-        if(id != -1) {
+        if (id != -1) {
             try {
-                curSession =  saveLoadHandler.Load(id);
+                curSession = saveLoadHandler.Load(id);
             } catch (Exception ex) {
                 throw new DienstfahrtenException(ex.getMessage());
             }
@@ -102,5 +110,16 @@ public class CentralLogic {
 
     public void changeTitle(String title) {
         curSession.setTitle(title);
+    }
+
+    public static void make(Context ctx, String text, Response.Listener<List<String>>
+            listener, Response.ErrorListener errorListener) {
+        try {
+            listener.onResponse(Arrays.asList(Overview.LOGIC.useAutoCompleter(text)));
+        } catch (DienstfahrtenException e) {
+            List<String> list = new LinkedList<>();
+            list.add(e.getMessage());
+            listener.onResponse(list);
+        }
     }
 }

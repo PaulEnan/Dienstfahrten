@@ -15,7 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import java.util.List;
 
 public class StartTab extends Fragment {
 
@@ -23,6 +27,7 @@ public class StartTab extends Fragment {
     private Handler handler;
     private static final int TRIGGER_AUTO_COMPLETE = 100;
     private static final long AUTO_COMPLETE_DELAY = 300;
+    AutoCompleterAdapter autoCompleterAdapter;
 
     @Nullable
     @Override
@@ -34,7 +39,7 @@ public class StartTab extends Fragment {
                 (R.id.autoCompleteStartLocation);
 
         //Setting up the adapter for AutoSuggest
-        final AutoCompleterAdapter autoCompleterAdapter = new AutoCompleterAdapter(context,
+        autoCompleterAdapter = new AutoCompleterAdapter(context,
                 android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setThreshold(3);
         autoCompleteTextView.setAdapter(autoCompleterAdapter);
@@ -62,6 +67,7 @@ public class StartTab extends Fragment {
                         AUTO_COMPLETE_DELAY);
             }
 
+
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -72,21 +78,32 @@ public class StartTab extends Fragment {
             public boolean handleMessage(Message msg) {
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(autoCompleteTextView.getText())) {
-                        try {
-                            Overview.LOGIC.useAutoCompleter(autoCompleteTextView.getText().toString());
-                        } catch (DienstfahrtenException e) {
-                            Toast.makeText(context ,e.getMessage(), Toast.LENGTH_LONG);
-                        }
+                        makeApiCall(autoCompleteTextView.getText().toString());
                     }
                 }
                 return false;
             }
         });
 
-        if (!(session == null || session.isDummy)){
+        if (!(session == null || session.isDummy)) {
 
         }
         return startTab;
+    }
+
+    private void makeApiCall(final String text) {
+        CentralLogic.make(getContext(), text, new Response.Listener<List<String>>() {
+            @Override
+            public void onResponse(List<String> response) {
+                //IMPORTANT: set data here and notify
+                autoCompleterAdapter.setData(response);
+                autoCompleterAdapter.notifyDataSetChanged();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        });
     }
 
     public void setSession(DOSession session) {

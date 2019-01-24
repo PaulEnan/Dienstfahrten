@@ -35,8 +35,6 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
         return dt;
     }
 
-
-
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {

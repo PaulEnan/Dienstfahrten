@@ -21,7 +21,7 @@ import com.android.volley.VolleyError;
 
 import java.util.List;
 
-public class StartTab extends Fragment {
+public class StartTab extends Fragment implements ICustomTab {
 
     DOSession session;
     private Handler handler;
@@ -108,5 +108,10 @@ public class StartTab extends Fragment {
 
     public void setSession(DOSession session) {
         this.session = session;
+    }
+
+    @Override
+    public void performTabaction() {
+
     }
 }

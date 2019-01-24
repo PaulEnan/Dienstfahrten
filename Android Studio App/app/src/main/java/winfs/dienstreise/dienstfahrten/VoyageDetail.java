@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.Toast;
 
 public class VoyageDetail extends AppCompatActivity {
@@ -43,6 +44,21 @@ public class VoyageDetail extends AppCompatActivity {
             mViewPager.setAdapter(mSectionsPagerAdapter);
 
             TabLayout tabLayout = findViewById(R.id.tabsPanel);
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                    //TODO add data to session
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
 
             mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
             tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));

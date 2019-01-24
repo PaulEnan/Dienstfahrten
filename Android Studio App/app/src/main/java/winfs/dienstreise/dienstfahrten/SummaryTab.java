@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
-public class SummaryTab extends Fragment {
+public class SummaryTab extends Fragment implements ICustomTab{
 
     DOSession session;
 
@@ -48,5 +48,10 @@ public class SummaryTab extends Fragment {
 
     public void setSession(DOSession session) {
         this.session = session;
+    }
+
+    @Override
+    public void performTabaction() {
+
     }
 }

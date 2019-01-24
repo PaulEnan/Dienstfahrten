@@ -13,16 +13,37 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * The central logic
  * @author winf101441
  */
 public class CentralLogic {
+    /**
+     * the save and load handler
+     */
     private ISaveLoadHandler saveLoadHandler;
+    /**
+     * the calculator
+     */
     private Calculator calculator;
+    /**
+     * all stored sessions
+     */
     List<DOSession> sessions;
+    /**
+     * the current session
+     */
     DOSession curSession;
 
+    /**
+     * the cost rate euro per kilometer
+     */
     public final static double variableCostRate = 0.30;
 
+    /**
+     * creates a central logic with set calculator and saveLoadHandler
+     * @param apiUser the apiuser for the calculator
+     * @param saveLoadHandler the save and load handler
+     */
     public CentralLogic(IApiUser apiUser, ISaveLoadHandler saveLoadHandler) {
         this.saveLoadHandler = saveLoadHandler;
         this.calculator = new Calculator(apiUser);
@@ -38,12 +59,23 @@ public class CentralLogic {
         }
     }
 
+    /**
+     * saves a session
+     * @param session the session
+     * @throws DienstfahrtenException gets thrown if something goes wrong
+     */
     public void SaveSession(DOSession session) throws DienstfahrtenException {
         if (!saveLoadHandler.Save(session)) {
             throw new DienstfahrtenException("Speichern nicht möglich");
         }
     }
 
+    /**
+     * loades a given session
+     * @param id the session's id
+     * @return the session
+     * @throws DienstfahrtenException gets thrown if something goes wrong
+     */
     public DOSession LoadSession(int id) throws DienstfahrtenException {
         if (id != -1) {
             try {
@@ -57,6 +89,13 @@ public class CentralLogic {
         return curSession;
     }
 
+    /**
+     * calculates the costs for the current session
+     * @return an array. Either only contains one cell with the result, or multiple cells with
+     * recommendations if one of the stations of the session was not identifiable
+     * @throws DienstfahrtenException gets thrown if one of the stations was not found at all or
+     * the connection did not work
+     */
     public String[] calculateCosts() throws DienstfahrtenException {
         DODestination[] arr = curSession.getStations().toArray(new DODestination[curSession.getStations().size()]);
         String[] stationArr = new String[arr.length];
@@ -77,6 +116,13 @@ public class CentralLogic {
         }
     }
 
+    /**
+     * uses the autocompleter, returning the propositions google maps has to offer for a given string
+     * @param text the string
+     * @return the array of propositions
+     * @throws DienstfahrtenException gets thrown if nothing was found for the string or the connection
+     * to google maps didn't work
+     */
     public String[] useAutoCompleter(String text) throws DienstfahrtenException {
         String result = calculator.autoCompleteAddress(text);
         if (result.contains("||")) {

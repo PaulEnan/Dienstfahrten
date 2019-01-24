@@ -177,13 +177,28 @@ public class ApiUser implements IApiUser {
 
     }
 
+    /**
+     * a private callable-class that makes a web request to a given url
+     */
     private class WebRequest implements Callable<String> {
+        /**
+         * the url
+         */
         private URL url;
 
+        /**
+         * creates a webrequest with a given url
+         * @param url url
+         */
         public WebRequest(URL url) {
             this.url = url;
         }
 
+        /**
+         * the call. Starts a get request with the url. returns the result as a string.
+         * @return
+         * @throws Exception
+         */
         @Override
         public String call() throws Exception {
             HttpURLConnection con = (HttpURLConnection) url.openConnection();

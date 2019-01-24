@@ -1,8 +1,6 @@
-
 /*
  * @author Joachim Borgloh
  */
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -73,20 +71,20 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		if (connection == null)
 			connect();
 
-		if (!checkTableExists("Location")) {
+		if (!checkTableExists("Destination")) {
 			try (Statement stmt = connection.createStatement()) {
-				System.out.println("Creating Table Location");
+				System.out.println("Creating Table Destination");
 				stmt.execute(
-						"CREATE TABLE Location (id integer primary key, street text, streetnumber integer, postcode text, city text, fullAdress text)");
+						"CREATE TABLE Destination (id integer primary key, sleepCosts double, foodCosts double, tripExtraCosts double, location text, occasion text)");
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
 		}
 		// Names Tabelle
-		if (!checkTableExists("Names")) {
+		if (!checkTableExists("Persons")) {
 			try (Statement stmt = connection.createStatement()) {
-				System.out.println("Creating Table Names");
-				stmt.execute("CREATE TABLE Names (id integer primary key, name text, lastName text)");
+				System.out.println("Creating Table Persons");
+				stmt.execute("CREATE TABLE Persons (id integer primary key, prename text, surname text)");
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
@@ -96,27 +94,27 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 			try (Statement stmt = connection.createStatement()) {
 				System.out.println("Creating Table SessionData");
 				stmt.execute(
-						"CREATE TABLE SessionData(id integer primary key, fixcosts double, variablecosts double, title text, ocassion text, date text, duration text)"); 
+						"CREATE TABLE SessionData(id integer primary key, duration integer, variablecosts double, title text, startLocation text, startDate text)"); 
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
 		}
 
-		if (!checkTableExists("SessionLocations")) {
+		if (!checkTableExists("SessionDestination")) {
 			try (Statement stmt = connection.createStatement()) {
 				System.out.println("Creating Table SessionLocations");
 				stmt.execute(
-						"CREATE TABLE SessionLocations (location_id integer, session_id integer, ind integer, foreign key(location_id) references Location(id), foreign key(session_id) references Session(id))");
+						"CREATE TABLE SessionDestination (dest_id integer, session_id integer, ind integer, foreign key(dest_id) references Destination(id), foreign key(session_id) references Session(id))");
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
 		}
 		// N:M Tabelle Namen Session
-		if (!checkTableExists("SessionNames")) {
+		if (!checkTableExists("SessionPerson")) {
 			try (Statement stmt = connection.createStatement()) {
-				System.out.println("Creating Table SessionNames");
+				System.out.println("Creating Table SessionPerson");
 				stmt.execute(
-						"CREATE TABLE SessionNames (names_id integer, session_id integer, ind integer, foreign key(names_id) references Names(id), foreign key(session_id) references Session(id))");
+						"CREATE TABLE SessionPerson (person_id integer, session_id integer, ind integer, foreign key(person_id) references Persons(id), foreign key(session_id) references Session(id))");
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
@@ -138,8 +136,8 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		}
 	}
 
-	private void WriteLocations(SessionData session) throws SQLException {
-		String deleteStmt = "delete from SessionLocations where session_id = ?";
+	private void WriteLocations(DOSession session) throws SQLException {
+		String deleteStmt = "delete from SessionDestination where session_id = ?";
 		try (PreparedStatement stmt = connection.prepareStatement(deleteStmt)) {
 			stmt.setInt(1, session.getId());
 			stmt.execute();
@@ -148,42 +146,42 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		}
 
 		int i = 0;
-		for (Location loc : session.getStations()) {
-			if (loc.getId() != null) {
-				String locationUpdateSql = "UPDATE Location set street = ?, streetnumber = ?, postcode = ?, city = ?, fullAdress = ? where id = ?";
-				try (PreparedStatement stmt = connection.prepareStatement(locationUpdateSql)) {
-					stmt.setString(1, loc.getStreet());
-					stmt.setInt(2, loc.getStreetNumber());
-					stmt.setString(3, loc.getPostCode());
-					stmt.setString(4, loc.getCity());
-					stmt.setString(5, loc.getFullAdress());
-					stmt.setInt(6, loc.getId());
+		for (DODestination dest : session.getStations()) {
+			if (dest.getId() != 0) { 
+				String destinationUpdateSQL = "UPDATE Destination set sleepCosts = ?, foodCosts = ?, tripExtraCosts = ?, location = ?, occasion = ? where id = ?";
+				try (PreparedStatement stmt = connection.prepareStatement(destinationUpdateSQL)) {
+					stmt.setDouble(1, dest.getSleepCosts());
+					stmt.setDouble(2, dest.getFoodCosts());
+					stmt.setDouble(3, dest.getTripExtraCosts());
+					stmt.setString(4, dest.getLocation());
+					stmt.setString(5, dest.getOccasion());
+					stmt.setInt(6, dest.getId());
 					stmt.execute();
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 				}
 			} else {
-				String locationInsertSql = "insert into Location (street, streetnumber, postcode, city, fullAdress) values (?,?,?,?,?)";
-				try (PreparedStatement stmt = connection.prepareStatement(locationInsertSql)) {
-					stmt.setString(1, loc.getStreet());
-					stmt.setInt(2, loc.getStreetNumber());
-					stmt.setString(3, loc.getPostCode());
-					stmt.setString(4, loc.getCity());
-					stmt.setString(5, loc.getFullAdress());
+				String destinationInsertSQL = "insert into Destination (sleepCosts, foodCosts, tripExtraCosts, location, occasion) values (?,?,?,?,?)";
+				try (PreparedStatement stmt = connection.prepareStatement(destinationInsertSQL)) {
+					stmt.setDouble(1, dest.getSleepCosts());
+					stmt.setDouble(2, dest.getFoodCosts());
+					stmt.setDouble(3, dest.getTripExtraCosts());
+					stmt.setString(4, dest.getLocation());
+					stmt.setString(5, dest.getOccasion());
 					stmt.execute();
-					loc.setId(GetLastInsertId());
+					dest.setId(GetLastInsertId());
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 				}
 			}
 
-			String sessionLocationInsertSql = "insert into SessionLocations (location_id, session_id, ind) values (?,?,?)";
-			try (PreparedStatement stmt = connection.prepareStatement(sessionLocationInsertSql)) {
-				stmt.setInt(1, loc.getId());
+			String sessionDestinationInsertSql = "insert into SessionDestination (dest_id, session_id, ind) values (?,?,?)";
+			try (PreparedStatement stmt = connection.prepareStatement(sessionDestinationInsertSql)) {
+				stmt.setInt(1, dest.getId());
 				stmt.setInt(2, session.getId());
 				stmt.setInt(3, i);
 				stmt.execute();
-				loc.setId(GetLastInsertId());
+				dest.setId(GetLastInsertId());
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
@@ -192,8 +190,8 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		}
 	}
 
-	private void WriteNames(SessionData session) throws SQLException {
-		String deleteStmt = "delete from SessionNames where session_id = ?";
+	private void WriteNames(DOSession session) throws SQLException {
+		String deleteStmt = "delete from SessionPerson where session_id = ?";
 		try (PreparedStatement stmt = connection.prepareStatement(deleteStmt)) {
 			stmt.setInt(1, session.getId());
 			stmt.execute();
@@ -202,36 +200,36 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		}
 
 		int i = 0;
-		for (Names name : session.getNames()) {
-			if (name.getId() != null) {
-				String namesUpdateSql = "UPDATE Names set name = ?, lastName = ? where id = ?";
-				try (PreparedStatement stmt = connection.prepareStatement(namesUpdateSql)) {
-					stmt.setString(1, name.getName());
-					stmt.setString(2, name.getLastName());
-					stmt.setInt(3, name.getId());
+		for (DOPerson person : session.getNames()) {
+			if (person.getId() != null) {
+				String personsUpdateSql = "UPDATE Persons set prename = ?, surname = ? where id = ?";
+				try (PreparedStatement stmt = connection.prepareStatement(personsUpdateSql)) {
+					stmt.setString(1, person.getPreName());
+					stmt.setString(2, person.getSurName());
+					stmt.setInt(3, person.getId());
 					stmt.execute();
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 				}
 			} else {
-				String namesInsertSql = "insert into Names (name, lastName) values (?,?)";
-				try (PreparedStatement stmt = connection.prepareStatement(namesInsertSql)) {
-					stmt.setString(1, name.getName());
-					stmt.setString(2, name.getLastName());
+				String personsInsertSql = "insert into Persons (prename, surname) values (?,?)";
+				try (PreparedStatement stmt = connection.prepareStatement(personsInsertSql)) {
+					stmt.setString(1, person.getPreName());
+					stmt.setString(2, person.getSurName());
 					stmt.execute();
-					name.setId(GetLastInsertId());
+					person.setId(GetLastInsertId());
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 				}
 			}
 
-			String sessionNamesInsertSql = "insert into SessionNames (names_id, session_id, ind) values (?,?,?)";
+			String sessionNamesInsertSql = "insert into SessionPerson (person_id, session_id, ind) values (?,?,?)";
 			try (PreparedStatement stmt = connection.prepareStatement(sessionNamesInsertSql)) {
-				stmt.setInt(1, name.getId());
+				stmt.setInt(1, person.getId());
 				stmt.setInt(2, session.getId());
 				stmt.setInt(3, i);
 				stmt.execute();
-				name.setId(GetLastInsertId());
+				person.setId(GetLastInsertId());
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
@@ -240,30 +238,28 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		}
 	}
 	
-	private void WriteSessionData(SessionData session) throws SQLException {
+	private void WriteSessionData(DOSession session) throws SQLException {
 		if (session.getId() != null) { // existiert auf DB => update
-			String sessionUpdateSql = "UPDATE SessionData set fixcosts = ?, variablecosts = ?, title = ?, ocassion = ?, date = ?, duration = ? where id = ?";
+			String sessionUpdateSql = "UPDATE SessionData set duration = ?, variablecosts = ?, title = ?, startLocation = ?, startDate = ? where id = ?";
 			try (PreparedStatement stmt = connection.prepareStatement(sessionUpdateSql)) {
-				stmt.setDouble(1, session.getFixCosts());
+				stmt.setInt(1, session.getDuration());
 				stmt.setDouble(2, session.getVariableCosts());
 				stmt.setString(3, session.getTitle());
-				stmt.setString(4, session.getOcassion());
+				stmt.setString(4, session.getStartLocation());
 				stmt.setString(5, session.getDate());
-				stmt.setString(6, session.getDuration());
-				stmt.setInt(7, session.getId());
+				stmt.setInt(6, session.getId());
 				stmt.execute();
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
 		} else { // insert
-			String sessionInsertSql = "insert into SessionData (fixcosts, variablecosts, title, ocassion, date, duration) values (?,?,?,?,?,?)";
+			String sessionInsertSql = "insert into SessionData (duration, variablecosts, title, startLocation, startDate) values (?,?,?,?,?)";
 			try (PreparedStatement stmt = connection.prepareStatement(sessionInsertSql)) {
-				stmt.setDouble(1, session.getFixCosts());
+				stmt.setInt(1, session.getDuration());
 				stmt.setDouble(2, session.getVariableCosts());
 				stmt.setString(3, session.getTitle());
-				stmt.setString(4, session.getOcassion());
+				stmt.setString(4, session.getStartLocation());
 				stmt.setString(5, session.getDate());
-				stmt.setString(6, session.getDuration());
 				stmt.execute();
 				session.setId(GetLastInsertId());
 			} catch (SQLException e) {
@@ -276,7 +272,7 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 	}
 
 	@Override
-	public void Save(SessionData session) throws SaveLoadException {
+	public void Save(DOSession session) throws SaveLoadException {
 		if (connection == null)
 			connect();
 
@@ -296,26 +292,27 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		}
 	}
 
-	private Location loadLocationFromResultSet(ResultSet rs) throws SQLException {
-		return new Location(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getString(5), rs.getString(6));
+	private DODestination loadDestinationFromResultSet(ResultSet rs) throws SQLException {
+		return new DODestination(rs.getInt(1), rs.getDouble(2), rs.getDouble(3), rs.getDouble(4), rs.getString(5), rs.getString(6));
 	}
 
 	//Load Names
-	private Names loadNamesFromResultSet (ResultSet rs) throws SQLException {
-		return new Names(rs.getInt(1), rs.getString(2), rs.getString(3));
+	private DOPerson loadPersonFromResultSet (ResultSet rs) throws SQLException {
+		return new DOPerson(rs.getInt(1), rs.getString(2), rs.getString(3));
 	}
 
-	private LinkedList<Location> loadLocationsForSession(int sessionId) {
-		String loadLocationsSql = "SELECT id, street, streetnumber, postcode, city, fullAdress FROM Location A join SessionLocations B on A.id = B.location_id WHERE B.session_id=?;";
+	private LinkedList<DODestination> loadDestinationsForSession(int sessionId) {
 
-		LinkedList<Location> result = new LinkedList<Location>();
+		String loadDestinationSql = "SELECT id, sleepCosts, foodCosts, tripExtraCosts, location, occasion FROM Destination A join SessionDestination B on A.id = B.dest_id WHERE B.session_id=?;";
 
-		try (PreparedStatement stmt = connection.prepareStatement(loadLocationsSql)) {
+		LinkedList<DODestination> result = new LinkedList<DODestination>();
+
+		try (PreparedStatement stmt = connection.prepareStatement(loadDestinationSql)) {
 			stmt.setInt(1, sessionId);
 			ResultSet rs = stmt.executeQuery();
 
 			while (rs.next()) {
-				result.add(loadLocationFromResultSet(rs));
+				result.add(loadDestinationFromResultSet(rs));
 			}
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
@@ -325,17 +322,17 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 	}
 	
 	//Load Names
-	private Set<Names> loadNamesForSession(int sessionId) {
-		String loadNamesSql = "SELECT id, name, lastName FROM Names A join SessionNames B on A.id = B.names_id WHERE B.session_id=?;";
+	private Set<DOPerson> loadPersonsForSession(int sessionId) {
+		String loadNamesSql = "SELECT id, prename, surname FROM Persons A join SessionPerson B on A.id = B.person_id WHERE B.session_id=?;";
 
-		Set<Names> result = new HashSet<Names>();
+		Set<DOPerson> result = new HashSet<DOPerson>();
 
 		try (PreparedStatement stmt = connection.prepareStatement(loadNamesSql)) {
 			stmt.setInt(1, sessionId);
 			ResultSet rs = stmt.executeQuery();
 
 			while (rs.next()) {
-				result.add(loadNamesFromResultSet(rs));
+				result.add(loadPersonFromResultSet(rs));
 			}
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
@@ -344,19 +341,18 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		return result;
 	}
 	
-	private SessionData loadSessionFromResultSet(ResultSet rs, LinkedList<Location> lcs, Set<Names> name) throws SQLException {
-		return new SessionData(rs.getInt(1), lcs, rs.getDouble(2), rs.getDouble(3), rs.getString(4), name, rs.getString(5),
-				rs.getString(6), rs.getString(7));
+	private DOSession loadSessionFromResultSet(ResultSet rs, LinkedList<DODestination> lcs, Set<DOPerson> persons) throws SQLException {
+		return new DOSession(rs.getInt(1), lcs, rs.getInt(2), rs.getDouble(3), rs.getString(4), persons, rs.getString(5),
+				rs.getString(6));
 	}
 
-	private SessionData[] GetSessionsInternal(Integer sessionId) {
-		LinkedList<SessionData> result = new LinkedList<SessionData>();
+	private DOSession[] GetSessionsInternal(Integer sessionId) {
+		LinkedList<DOSession> result = new LinkedList<DOSession>();
 
 		if (connection == null)
 			connect();
-
 		try {
-			String getSessionSql = "select id, fixcosts, variablecosts, title, ocassion, date, duration from SessionData";
+			String getSessionSql = "select id, duration, variablecosts, title, startLocation, startDate from SessionData";
 			if (sessionId != null)
 				getSessionSql = getSessionSql + " where id = ?;";
 
@@ -366,9 +362,9 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 				ResultSet rs = stmt.executeQuery();
 
 				while (rs.next()) {
-					LinkedList<Location> sessionLocations = loadLocationsForSession(rs.getInt(1));
-					Set<Names> sessionNames = loadNamesForSession(rs.getInt(1));
-					result.add(loadSessionFromResultSet(rs, sessionLocations, sessionNames));
+					LinkedList<DODestination> sessionDestinations = loadDestinationsForSession(rs.getInt(1));
+					Set<DOPerson> sessionPersons = loadPersonsForSession(rs.getInt(1));
+					result.add(loadSessionFromResultSet(rs, sessionDestinations, sessionPersons));
 				}
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
@@ -376,61 +372,61 @@ public class SaveLoadHandler implements ISaveLoadHandler {
 		} finally {
 			disconnect();
 		}
-		return (SessionData[]) result.toArray(new SessionData[result.size()]);
+		return (DOSession[]) result.toArray(new DOSession[result.size()]);
 	}
 
 	@Override
-	public SessionData Load(int index) throws SaveLoadException {
-		SessionData[] result = GetSessionsInternal(index);
+	public DOSession Load(int index) throws SaveLoadException {
+		DOSession[] result = GetSessionsInternal(index);
 		if (result.length == 1)
 			return result[0];
 		return null;
 	}
 
 	@Override
-	public SessionData[] getAllSessions() throws SaveLoadException {
+	public DOSession[] getAllSessions() throws SaveLoadException {
 		return GetSessionsInternal(null);
 	}
 
-	@Override
-	public LinkedList<Location> loadAllLocations() throws SaveLoadException {
-		LinkedList<Location> result = new LinkedList<Location>();
-		
-		if (connection == null)
-			connect();
-		String loadLocationsSql = "SELECT id, street, streetnumber, postcode, city, fullAdress FROM Location";
+//	@Override
+//	public LinkedList<DoDestination> loadAllLocations() throws SaveLoadException {
+//		LinkedList<DoDestination> result = new LinkedList<DoDestination>();
+//		
+//		if (connection == null)
+//			connect();
+//		String loadLocationsSql = "SELECT id, street, streetnumber, postcode, city, fullAdress FROM Location";
+//
+//		try (PreparedStatement stmt = connection.prepareStatement(loadLocationsSql)) {
+//			ResultSet rs = stmt.executeQuery();
+//
+//			while (rs.next()) {
+//				result.add(loadLocationFromResultSet(rs));
+//			}
+//		} catch (SQLException e) {
+//			System.out.println(e.getMessage());
+//		}
+//
+//		return result;
+//	}
 
-		try (PreparedStatement stmt = connection.prepareStatement(loadLocationsSql)) {
-			ResultSet rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				result.add(loadLocationFromResultSet(rs));
-			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-
-		return result;
-	}
-
-	@Override
-	public Set<Names> loadAllNames() throws SaveLoadException {
-		Set<Names> result = new HashSet<Names>();
-		
-		if (connection == null)
-			connect();
-		String loadNameSql = "SELECT id, name, lastName FROM Names";
-
-		try (PreparedStatement stmt = connection.prepareStatement(loadNameSql)) {
-			ResultSet rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				result.add(loadNamesFromResultSet(rs));
-			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-
-		return result;
-	}
+//	@Override
+//	public Set<DOPerson> loadAllNames() throws SaveLoadException {
+//		Set<DOPerson> result = new HashSet<DOPerson>();
+//		
+//		if (connection == null)
+//			connect();
+//		String loadNameSql = "SELECT id, name, lastName FROM Names";
+//
+//		try (PreparedStatement stmt = connection.prepareStatement(loadNameSql)) {
+//			ResultSet rs = stmt.executeQuery();
+//
+//			while (rs.next()) {
+//				result.add(loadNamesFromResultSet(rs));
+//			}
+//		} catch (SQLException e) {
+//			System.out.println(e.getMessage());
+//		}
+//
+//		return result;
+//	}
 }

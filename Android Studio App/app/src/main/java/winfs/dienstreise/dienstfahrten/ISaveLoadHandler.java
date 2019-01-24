@@ -7,9 +7,7 @@ import java.util.Set;
  * @author Paul Enan + Joachim Borgloh
  */
 public interface ISaveLoadHandler {
-    public void Save(SessionData session) throws SaveLoadException;
-    public SessionData Load(int index) throws SaveLoadException;
-    public SessionData[] getAllSessions() throws SaveLoadException;
-    public LinkedList<Location> loadAllLocations() throws SaveLoadException;
-    public Set<Names> loadAllNames() throws SaveLoadException;
+    public void Save(DOSession session) throws SaveLoadException;
+    public DOSession Load(int index) throws SaveLoadException;
+    public DOSession[] getAllSessions() throws SaveLoadException;
 }

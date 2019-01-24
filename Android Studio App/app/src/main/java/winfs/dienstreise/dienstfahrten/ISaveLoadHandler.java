@@ -1,13 +1,16 @@
 package winfs.dienstreise.dienstfahrten;
+import android.location.Location;
+
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
  *
- * @author Paul Enan + Joachim Borgloh
+ * @author winf101441 + Joachim Borgloh
  */
 public interface ISaveLoadHandler {
-    public void Save(DOSession session) throws SaveLoadException;
-    public DOSession Load(int index) throws SaveLoadException;
-    public DOSession[] getAllSessions() throws SaveLoadException;
+    public void Save(SessionData session) throws SaveLoadException;
+    public SessionData Load(int index) throws SaveLoadException;
+    public SessionData[] getAllSessions() throws SaveLoadException;
 }

@@ -1,3 +1,6 @@
+/*
+ * @author Joachim Borgloh
+ */
 package winfs.dienstreise.dienstfahrten;
 
 import android.content.ContentValues;
@@ -5,232 +8,438 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
-public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler {
+public class SaveLoadHandler implements ISaveLoadHandler {
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-    private static final String DBNAME = "voyage_calculation";
+	private Connection connection;
 
-    private static final String PK = "_id";
+	private void connect() {
+		if (connection != null)
+			disconnect();
+		try {
+			// db parameters
+			String url = "jdbc:sqlite:./project.db";
+			// create a connection to the database
+			connection = DriverManager.getConnection(url);
 
-    private static final String PERSONSTABLE = "persons";
-    private static final String PRENAME = "prename";
-    private static final String SURNAME = "surname";
+			System.out.println("Connection to SQLite has been established.");
 
-    private static final String DESTINATIONTABLE = "destination";
-    private static final String OCCASION = "occasion";
-    private static final String SLEEPCOSTS = "sleep_costs";
-    private static final String FOODCOSTS = "food_costs";
-    private static final String TRIPEXTRACOSTS = "trip_extra_sosts";
-    private static final String DESTLOCATION = "dest_location";
+			createTablesIfNeeded();
 
-    private static final String SESSIONDESTTABLE = "session_dest";
-    private static final String SESSIONID = "session_id";
-    private static final String DESTINATIONID = "destination_id";
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			if (connection != null)
+				disconnect();
+		}
+	}
 
-    private static final String SESSIONTABLE = "session";
-    private static final String PERSONID = "person_id";
-    private static final String STARTLOCATION = "start_location";
-    private static final String STARTDATE = "start_date";
-    private static final String TITLE = "title";
-    private static final String DURATION = "duration";
-    private static final String VARCOSTS = "var_costs";
+	private void disconnect() {
+		try {
+			if (connection != null)
+				connection.close();
+			connection = null;
 
+			System.out.println("Connection to SQLite has been disconnected.");
 
-    private static String queryForSession = String.format("SELECT s%1$s, %2$s, %3$s, %4$s, %5$s, " +
-                    "%6$s, %7$s, %8$s, %9$s FROM %10$s " +
-                    " INNER JOIN %11$s ON %12$s = p%1$s", PK, PRENAME, SURNAME, TITLE,
-            STARTLOCATION, STARTDATE, DURATION, PERSONID, VARCOSTS, SESSIONTABLE,
-            PERSONSTABLE, PERSONID);
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			connection = null;
+		}
+	}
 
-    private static String queryForDestination = String.format("SELECT d%1$s, %2$s, %3$s, %4$s, " +
-                    "%5$s, %6$s FROM %7$s " +
-                    " INNER JOIN %8$s ON %9$s = d%1$s", PK, FOODCOSTS, SLEEPCOSTS,
-            TRIPEXTRACOSTS, DESTLOCATION, OCCASION, SESSIONDESTTABLE,
-            DESTINATIONTABLE, DESTINATIONID);
-    SQLiteDatabase db = this.getReadableDatabase();
+	private Boolean checkTableExists(String tableName) {
+		if (connection == null)
+			connect();
 
-    public DatabaseHelper(Context context) {
-        super(context, DBNAME, null, 1);
-    }
+		String tableExistsSql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?;";
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        String createTablePersons = "CREATE TABLE " + PERSONSTABLE
-                + " ( p" + PK + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + PRENAME + " TEXT, " + SURNAME + " TEXT)";
+		try (PreparedStatement stmt = connection.prepareStatement(tableExistsSql)) {
+			stmt.setString(1, tableName);
+			ResultSet lcl_Result = stmt.executeQuery();
 
-        String createTableDestination = "CREATE TABLE " + DESTINATIONTABLE + " ( d" + PK
-                + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SLEEPCOSTS
-                + " INTEGER, " + FOODCOSTS + " INTEGER, " + TRIPEXTRACOSTS
-                + " INTEGER, " + DESTLOCATION + " TEXT, " + OCCASION + " TEXT)";
+			return lcl_Result.next();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
+	}
 
-        String createTableSessionDest = "CREATE TABLE " + SESSIONDESTTABLE + " (" + SESSIONID
-                + " INTEGER, " + DESTINATIONID + " INTEGER, FOREIGN KEY ("
-                + DESTINATIONID + ") REFERENCES " + DESTINATIONTABLE
-                + "(d" + PK + "), FOREIGN KEY (" + SESSIONID + ") REFERENCES " + SESSIONTABLE
-                + "(s" + PK + "))";
+	private void createTablesIfNeeded() {
+		if (connection == null)
+			connect();
 
-        String createTableSession = "CREATE TABLE " + SESSIONTABLE + " (s" + PK
-                + " INTEGER PRIMARY KEY AUTOINCREMENT, " + PERSONID + " INTEGER, "
-                + STARTLOCATION + " INTEGER, " + STARTDATE + " DATETIME, " + TITLE + " TEXT, "
-                + DURATION + " INTEGER, " + VARCOSTS + " INTEGER, FOREIGN KEY (" + PERSONID + ") REFERENCES "
-                + PERSONSTABLE + "(p" + PK + "))";
+		if (!checkTableExists("Destination")) {
+			try (Statement stmt = connection.createStatement()) {
+				System.out.println("Creating Table Destination");
+				stmt.execute(
+						"CREATE TABLE Destination (id integer primary key, sleepCosts double, foodCosts double, tripExtraCosts double, location text, occasion text)");
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		// Names Tabelle
+		if (!checkTableExists("Persons")) {
+			try (Statement stmt = connection.createStatement()) {
+				System.out.println("Creating Table Persons");
+				stmt.execute("CREATE TABLE Persons (id integer primary key, prename text, surname text)");
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		}
 
-        db.execSQL(createTableDestination);
-        db.execSQL(createTablePersons);
-        db.execSQL(createTableSessionDest);
-        db.execSQL(createTableSession);
-    }
+		if (!checkTableExists("SessionData")) {
+			try (Statement stmt = connection.createStatement()) {
+				System.out.println("Creating Table SessionData");
+				stmt.execute(
+						"CREATE TABLE SessionData(id integer primary key, duration integer, variablecosts double, title text, startLocation text, startDate text)"); 
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		}
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("DROP TABLE IF EXISTS " + PERSONSTABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + DESTINATIONTABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + SESSIONDESTTABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + SESSIONTABLE);
+		if (!checkTableExists("SessionDestination")) {
+			try (Statement stmt = connection.createStatement()) {
+				System.out.println("Creating Table SessionLocations");
+				stmt.execute(
+						"CREATE TABLE SessionDestination (dest_id integer, session_id integer, ind integer, foreign key(dest_id) references Destination(id), foreign key(session_id) references Session(id))");
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		// N:M Tabelle Namen Session
+		if (!checkTableExists("SessionPerson")) {
+			try (Statement stmt = connection.createStatement()) {
+				System.out.println("Creating Table SessionPerson");
+				stmt.execute(
+						"CREATE TABLE SessionPerson (person_id integer, session_id integer, ind integer, foreign key(person_id) references Persons(id), foreign key(session_id) references Session(id))");
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		}
 
-        onCreate(db);
-    }
+	}
 
-    @Override
-    public boolean Save(DOSession session) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        int id;
-        try {
-            ContentValues cv = new ContentValues();
-            cv.put(PRENAME, session.person.prename);
-            cv.put(SURNAME, session.person.surname);
-            id = (int) db.insert(PERSONSTABLE, null, cv);
-            session.person.setID(id);
-            cv.clear();
+	public void ConnectAndCheckTablesExists() {
+		connect();
+		disconnect();
+	}
 
-            cv.put(STARTLOCATION, session.startLocation);
-            cv.put(PERSONID, session.person.id);
-            cv.put(STARTDATE, session.startDate.toString());
-            cv.put(TITLE, session.title);
-            cv.put(DURATION, session.duration);
-            id = (int) db.insert(SESSIONTABLE, null, cv);
-            session.setId(id);
-            cv.clear();
+	private int GetLastInsertId() throws SQLException {
+		String lcl_GetLastIdSql = "SELECT last_insert_rowid()";
+		try (Statement stmt = connection.createStatement()) {
+			ResultSet result = stmt.executeQuery(lcl_GetLastIdSql);
+			result.next();
+			return result.getInt(1);
+		}
+	}
 
-            for (DODestination dest : session.getStations()) {
+	private void WriteLocations(DOSession session) throws SQLException {
+		String deleteStmt = "delete from SessionDestination where session_id = ?";
+		try (PreparedStatement stmt = connection.prepareStatement(deleteStmt)) {
+			stmt.setInt(1, session.getId());
+			stmt.execute();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
 
-                cv.put(FOODCOSTS, dest.foodCosts);
-                cv.put(SLEEPCOSTS, dest.sleepCosts);
-                cv.put(TRIPEXTRACOSTS, dest.tripExtraCosts);
-                cv.put(DESTLOCATION, dest.location);
-                cv.put(OCCASION, dest.occasion);
-                id = (int) db.insert(DESTINATIONTABLE, null, cv);
-                dest.setId(id);
-                cv.clear();
+		int i = 0;
+		for (DODestination dest : session.getStations()) {
+			if (dest.getId() != 0) { 
+				String destinationUpdateSQL = "UPDATE Destination set sleepCosts = ?, foodCosts = ?, tripExtraCosts = ?, location = ?, occasion = ? where id = ?";
+				try (PreparedStatement stmt = connection.prepareStatement(destinationUpdateSQL)) {
+					stmt.setDouble(1, dest.getSleepCosts());
+					stmt.setDouble(2, dest.getFoodCosts());
+					stmt.setDouble(3, dest.getTripExtraCosts());
+					stmt.setString(4, dest.getLocation());
+					stmt.setString(5, dest.getOccasion());
+					stmt.setInt(6, dest.getId());
+					stmt.execute();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
+			} else {
+				String destinationInsertSQL = "insert into Destination (sleepCosts, foodCosts, tripExtraCosts, location, occasion) values (?,?,?,?,?)";
+				try (PreparedStatement stmt = connection.prepareStatement(destinationInsertSQL)) {
+					stmt.setDouble(1, dest.getSleepCosts());
+					stmt.setDouble(2, dest.getFoodCosts());
+					stmt.setDouble(3, dest.getTripExtraCosts());
+					stmt.setString(4, dest.getLocation());
+					stmt.setString(5, dest.getOccasion());
+					stmt.execute();
+					dest.setId(GetLastInsertId());
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
+			}
 
-                cv.put(SESSIONID, session.id);
-                cv.put(DESTINATIONID, dest.id);
-                db.insert(SESSIONDESTTABLE, null, cv);
-            }
+			String sessionDestinationInsertSql = "insert into SessionDestination (dest_id, session_id, ind) values (?,?,?)";
+			try (PreparedStatement stmt = connection.prepareStatement(sessionDestinationInsertSql)) {
+				stmt.setInt(1, dest.getId());
+				stmt.setInt(2, session.getId());
+				stmt.setInt(3, i);
+				stmt.execute();
+				dest.setId(GetLastInsertId());
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
 
+			i++;
+		}
+	}
 
-        } catch (Exception ex) {
-            return false;
+	private void WriteNames(DOSession session) throws SQLException {
+		String deleteStmt = "delete from SessionPerson where session_id = ?";
+		try (PreparedStatement stmt = connection.prepareStatement(deleteStmt)) {
+			stmt.setInt(1, session.getId());
+			stmt.execute();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
 
-        }
-        return true;
-    }
+		int i = 0;
+		for (DOPerson person : session.getNames()) {
+			if (person.getId() != null) {
+				String personsUpdateSql = "UPDATE Persons set prename = ?, surname = ? where id = ?";
+				try (PreparedStatement stmt = connection.prepareStatement(personsUpdateSql)) {
+					stmt.setString(1, person.getPreName());
+					stmt.setString(2, person.getSurName());
+					stmt.setInt(3, person.getId());
+					stmt.execute();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
+			} else {
+				String personsInsertSql = "insert into Persons (prename, surname) values (?,?)";
+				try (PreparedStatement stmt = connection.prepareStatement(personsInsertSql)) {
+					stmt.setString(1, person.getPreName());
+					stmt.setString(2, person.getSurName());
+					stmt.execute();
+					person.setId(GetLastInsertId());
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
+			}
 
-    @Override
-    public DOSession Load(int id) throws SaveLoadException {
-        try {
-            String query = String.format("%1$s WHERE s%2$s = %3$s", queryForSession, PK, id);
+			String sessionNamesInsertSql = "insert into SessionPerson (person_id, session_id, ind) values (?,?,?)";
+			try (PreparedStatement stmt = connection.prepareStatement(sessionNamesInsertSql)) {
+				stmt.setInt(1, person.getId());
+				stmt.setInt(2, session.getId());
+				stmt.setInt(3, i);
+				stmt.execute();
+				person.setId(GetLastInsertId());
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
 
-            String destQuery = String.format("%1$s WHERE %2$s = %3$s", queryForDestination,
-                    SESSIONID, id);
-            SQLiteDatabase db = this.getReadableDatabase();
+			i++;
+		}
+	}
+	
+	private void WriteSessionData(DOSession session) throws SQLException {
+		if (session.getId() != null) { // existiert auf DB => update
+			String sessionUpdateSql = "UPDATE SessionData set duration = ?, variablecosts = ?, title = ?, startLocation = ?, startDate = ? where id = ?";
+			try (PreparedStatement stmt = connection.prepareStatement(sessionUpdateSql)) {
+				stmt.setInt(1, session.getDuration());
+				stmt.setDouble(2, session.getVariableCosts());
+				stmt.setString(3, session.getTitle());
+				stmt.setString(4, session.getStartLocation());
+				stmt.setString(5, session.getDate());
+				stmt.setInt(6, session.getId());
+				stmt.execute();
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		} else { // insert
+			String sessionInsertSql = "insert into SessionData (duration, variablecosts, title, startLocation, startDate) values (?,?,?,?,?)";
+			try (PreparedStatement stmt = connection.prepareStatement(sessionInsertSql)) {
+				stmt.setInt(1, session.getDuration());
+				stmt.setDouble(2, session.getVariableCosts());
+				stmt.setString(3, session.getTitle());
+				stmt.setString(4, session.getStartLocation());
+				stmt.setString(5, session.getDate());
+				stmt.execute();
+				session.setId(GetLastInsertId());
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		}
 
-            Cursor cursor = db.rawQuery(destQuery, null);
+		WriteLocations(session);
+		WriteNames(session);
+	}
 
-            List<DODestination> destinations = getDestiationsFromCursor(cursor);
-            cursor.close();
+	@Override
+	public void Save(DOSession session) throws SaveLoadException {
+		if (connection == null)
+			connect();
 
-            Cursor cursorForSession = db.rawQuery(query, null);
-            cursorForSession.moveToFirst();
-            DOSession session = getSession(id, destinations, cursorForSession);
-            cursor.close();
-            return session;
-        } catch (Exception ex) {
-            throw new SaveLoadException(ex.getMessage());
-        }
+		try {
+			connection.setAutoCommit(false);
+			WriteSessionData(session);
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+			disconnect();
+		}
+	}
 
-    }
+	private DODestination loadDestinationFromResultSet(ResultSet rs) throws SQLException {
+		return new DODestination(rs.getInt(1), rs.getDouble(2), rs.getDouble(3), rs.getDouble(4), rs.getString(5), rs.getString(6));
+	}
 
-    public List<DOSession> getAllSessions() throws SaveLoadException {
-        try {
-            SQLiteDatabase db = this.getReadableDatabase();
-            List<DOSession> listSessions = new ArrayList<>();
-            List<DODestination> destinations;
-            Cursor cursorForDestinations;
-            int sessionId;
-            String destQuery = String.format("%1$s WHERE %2$s = ?", queryForDestination,
-                    SESSIONID);
-            Cursor cursor = db.rawQuery(queryForSession, null);
-            while (cursor.moveToNext()) {
-                sessionId = cursor.getInt(cursor.getColumnIndex("s" + PK));
-                cursorForDestinations = db.rawQuery(destQuery,
-                        new String[]{Integer.toString(sessionId)});
+	//Load Names
+	private DOPerson loadPersonFromResultSet (ResultSet rs) throws SQLException {
+		return new DOPerson(rs.getInt(1), rs.getString(2), rs.getString(3));
+	}
 
-                destinations = getDestiationsFromCursor(cursorForDestinations);
-                cursorForDestinations.close();
-                listSessions.add(getSession(sessionId, destinations, cursor));
-            }
-            cursor.close();
-            return listSessions;
-        } catch (Exception ex) {
-            throw new SaveLoadException(ex.getMessage());
-        } finally {
-            db.close();
-        }
-    }
+	private LinkedList<DODestination> loadDestinationsForSession(int sessionId) {
 
-    List<DODestination> getDestiationsFromCursor(Cursor cursor) {
-        List<DODestination> destinations = new LinkedList<>();
-        while (cursor.moveToNext()) {
-            destinations.add(
-                    new DODestination(
-                            cursor.getInt(cursor.getColumnIndex("d" + PK)),
-                            cursor.getInt(cursor.getColumnIndex(SLEEPCOSTS)),
-                            cursor.getInt(cursor.getColumnIndex(FOODCOSTS)),
-                            cursor.getInt(cursor.getColumnIndex(TRIPEXTRACOSTS)),
-                            cursor.getString(cursor.getColumnIndex(DESTLOCATION)),
-                            cursor.getString(cursor.getColumnIndex(OCCASION))
-                    )
-            );
-        }
-        return destinations;
-    }
+		String loadDestinationSql = "SELECT id, sleepCosts, foodCosts, tripExtraCosts, location, occasion FROM Destination A join SessionDestination B on A.id = B.dest_id WHERE B.session_id=?;";
 
-    DOSession getSession(int id, List<DODestination> destinations, Cursor cursor) {
-        Date start = null;
-        try {
-            start = dateFormat.parse(cursor.getString(cursor.getColumnIndex(STARTDATE)));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new DOSession(id, destinations, cursor.getString(cursor.getColumnIndex(TITLE)),
-                new DOPerson(cursor.getInt(cursor.getColumnIndex(PERSONID)),
-                        cursor.getString(cursor.getColumnIndex(PRENAME)),
-                        cursor.getString(cursor.getColumnIndex(SURNAME))),
-                cursor.getString(cursor.getColumnIndex(STARTLOCATION)),
-                start, cursor.getInt(cursor.getColumnIndex(DURATION)),
-                cursor.getInt(cursor.getColumnIndex(VARCOSTS)));
+		LinkedList<DODestination> result = new LinkedList<DODestination>();
 
-    }
+		try (PreparedStatement stmt = connection.prepareStatement(loadDestinationSql)) {
+			stmt.setInt(1, sessionId);
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				result.add(loadDestinationFromResultSet(rs));
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+
+		return result;
+	}
+	
+	//Load Names
+	private Set<DOPerson> loadPersonsForSession(int sessionId) {
+		String loadNamesSql = "SELECT id, prename, surname FROM Persons A join SessionPerson B on A.id = B.person_id WHERE B.session_id=?;";
+
+		Set<DOPerson> result = new HashSet<DOPerson>();
+
+		try (PreparedStatement stmt = connection.prepareStatement(loadNamesSql)) {
+			stmt.setInt(1, sessionId);
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				result.add(loadPersonFromResultSet(rs));
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+
+		return result;
+	}
+	
+	private DOSession loadSessionFromResultSet(ResultSet rs, LinkedList<DODestination> lcs, Set<DOPerson> persons) throws SQLException {
+		return new DOSession(rs.getInt(1), lcs, rs.getInt(2), rs.getDouble(3), rs.getString(4), persons, rs.getString(5),
+				rs.getString(6));
+	}
+
+	private DOSession[] GetSessionsInternal(Integer sessionId) {
+		LinkedList<DOSession> result = new LinkedList<DOSession>();
+
+		if (connection == null)
+			connect();
+		try {
+			String getSessionSql = "select id, duration, variablecosts, title, startLocation, startDate from SessionData";
+			if (sessionId != null)
+				getSessionSql = getSessionSql + " where id = ?;";
+
+			try (PreparedStatement stmt = connection.prepareStatement(getSessionSql)) {
+				if (sessionId != null)
+					stmt.setInt(1, sessionId);
+				ResultSet rs = stmt.executeQuery();
+
+				while (rs.next()) {
+					LinkedList<DODestination> sessionDestinations = loadDestinationsForSession(rs.getInt(1));
+					Set<DOPerson> sessionPersons = loadPersonsForSession(rs.getInt(1));
+					result.add(loadSessionFromResultSet(rs, sessionDestinations, sessionPersons));
+				}
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		} finally {
+			disconnect();
+		}
+		return (DOSession[]) result.toArray(new DOSession[result.size()]);
+	}
+
+	@Override
+	public DOSession Load(int index) throws SaveLoadException {
+		DOSession[] result = GetSessionsInternal(index);
+		if (result.length == 1)
+			return result[0];
+		return null;
+	}
+
+	@Override
+	public DOSession[] getAllSessions() throws SaveLoadException {
+		return GetSessionsInternal(null);
+	}
+
+//	@Override
+//	public LinkedList<DoDestination> loadAllLocations() throws SaveLoadException {
+//		LinkedList<DoDestination> result = new LinkedList<DoDestination>();
+//		
+//		if (connection == null)
+//			connect();
+//		String loadLocationsSql = "SELECT id, street, streetnumber, postcode, city, fullAdress FROM Location";
+//
+//		try (PreparedStatement stmt = connection.prepareStatement(loadLocationsSql)) {
+//			ResultSet rs = stmt.executeQuery();
+//
+//			while (rs.next()) {
+//				result.add(loadLocationFromResultSet(rs));
+//			}
+//		} catch (SQLException e) {
+//			System.out.println(e.getMessage());
+//		}
+//
+//		return result;
+//	}
+
+//	@Override
+//	public Set<DOPerson> loadAllNames() throws SaveLoadException {
+//		Set<DOPerson> result = new HashSet<DOPerson>();
+//		
+//		if (connection == null)
+//			connect();
+//		String loadNameSql = "SELECT id, name, lastName FROM Names";
+//
+//		try (PreparedStatement stmt = connection.prepareStatement(loadNameSql)) {
+//			ResultSet rs = stmt.executeQuery();
+//
+//			while (rs.next()) {
+//				result.add(loadNamesFromResultSet(rs));
+//			}
+//		} catch (SQLException e) {
+//			System.out.println(e.getMessage());
+//		}
+//
+//		return result;
+//	}
 }
-
-

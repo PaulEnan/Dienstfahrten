@@ -1,5 +1,5 @@
 /*
- * @author Joachim Borgloh
+ * @author Joachim Borgloh + Paul Enan
  */
  package winfs.dienstreise.dienstfahrten;
 
@@ -7,10 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Set;
 
-/**
- *
- * @author Joachim Borgloh
- */
+
 public class DOSession {
 	
 	private Integer id;

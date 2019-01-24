@@ -13,9 +13,9 @@ public class CentralLogicTests {
     @Test
     public void testCalculationOfMultipleAdresses() {
 
-        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, new DOLocation("", "", "Berlin", 0), null, null),
-                new DODestination(0, 0, 0, new DOLocation("", "", "Hamburg", 0), null, null),
-                new DODestination(0, 0, 0, new DOLocation("", "", "Warschau", 0), null, null)};
+        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, 0, "Berlin", null),
+                new DODestination(0, 0, 0, 0, "Hamburg", null),
+                new DODestination(0, 0, 0, 0, "Warschau", null)};
         String[] resultText = new String[]{
                 "{\"destination_addresses\":[\"Polen, Warschau\"],\"rows\":[{\"elements\":[{\"duration\":{\"text\":\"3 Stunden, 17 Minuten\",\"value\":11794},\"distance\":{\"text\":\"289 km\",\"value\":288796},\"status\":\"OK\"}]}],\"origin_addresses\":[\"Hamburg, Deutschland\"],\"status\":\"OK\"}",
                 "{\"destination_addresses\":[\"Hamburg, Deutschland\"],\"rows\":[{\"elements\":[{\"duration\":{\"text\":\"3 Stunden, 17 Minuten\",\"value\":11794},\"distance\":{\"text\":\"852 km\",\"value\":288796},\"status\":\"OK\"}]}],\"origin_addresses\":[\"Berlin, Deutschland\"],\"status\":\"OK\"}"};
@@ -27,7 +27,7 @@ public class CentralLogicTests {
 
         IApiUser apiUser = new FakeApiUser(resultText, addressText, new String[0]);
         DOSession session = new DOSession(0, Arrays.asList(stations), "test1", null,
-                 null, null);
+                 null, null, 0, 0);
         CentralLogic logic = new CentralLogic(
                 apiUser, new FakeSaveLoadHandler(new LinkedList<DOSession>(Arrays.asList(session))));
         String[] result = new String[0];
@@ -44,12 +44,12 @@ public class CentralLogicTests {
 
     @Test
     public void testCalculationWithInvalidName() {
-        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, new DOLocation("", "", "Berlin", 0), null, null),
-                new DODestination(0, 0, 0, new DOLocation("", "", "Hamburg|Berlin", 0), null, null),
-                new DODestination(0, 0, 0, new DOLocation("", "", "Warschau", 0), null, null)};
+        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, 0, "Berlin", null),
+                new DODestination(0, 0, 0, 0, "Hamburg|Berlin", null),
+                new DODestination(0, 0, 0, 0, "Warschau", null)};
         IApiUser apiUser = new FakeApiUser(new String[0], new String[0], new String[0]);
-        DOSession session = new DOSession(0, Arrays.asList(stations), "test1", null,
-                null, null);
+        DOSession session = new DOSession(0, Arrays.asList(stations), "test2", null,
+                null, null, 0, 0);
         CentralLogic logic = new CentralLogic(
                 apiUser, new FakeSaveLoadHandler(new LinkedList<DOSession>(Arrays.asList(session))));
         String[] result = new String[0];
@@ -64,9 +64,9 @@ public class CentralLogicTests {
 
     @Test
     public void testCalculateWithAutoCompleter() {
-        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, new DOLocation("", "", "Berlin", 0), null, null),
-                new DODestination(0, 0, 0, new DOLocation("", "", "Hamburg", 0), null, null),
-                new DODestination(0, 0, 0, new DOLocation("", "", "Warschau", 0), null, null)};
+        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, 0, "Berlin", null),
+                new DODestination(0, 0, 0, 0, "Hamburg", null),
+                new DODestination(0, 0, 0, 0, "Warschau", null)};
         String[] autoCompleterText = new String[] {
           "{\"predictions\":[{\"reference\":\"ChIJAVkDPzdOqEcRcDteW0YgIQQ\",\"types\":[\"locality\",\"political\",\"geocode\"],\"matched_substrings\":[{\"offset\":0,\"length\":6}],\"terms\":[{\"offset\":0,\"value\":\"Berlin\"},{\"offset\":8,\"value\":\"Deutschland\"}],\"structured_formatting\":{\"main_text_matched_substrings\":[{\"offset\":0,\"length\":6}],\"secondary_text\":\"Deutschland\",\"main_text\":\"Berlin\"},\"description\":\"Berlin, Deutschland\",\"id\":\"6b1afbd7fcf2ec16ff8e2f95514e2badb8c2451d\",\"place_id\":\"ChIJAVkDPzdOqEcRcDteW0YgIQQ\"},{\"reference\":\"ChIJe-ff-71RqEcRqvy8lRR4PHo\",\"types\":[\"transit_station\",\"point_of_interest\",\"establishment\",\"geocode\"],\"matched_substrings\":[{\"offset\":0,\"length\":6}],\"terms\":[{\"offset\":0,\"value\":\"Berlin Hauptbahnhof\"},{\"offset\":21,\"value\":\"Europaplatz\"},{\"offset\":34,\"value\":\"Berlin\"},{\"offset\":42,\"value\":\"Deutschland\"}],\"structured_formatting\":{\"main_text_matched_substrings\":[{\"offset\":0,\"length\":6}],\"secondary_text\":\"Europaplatz, Berlin, Deutschland\",\"main_text\":\"Berlin Hauptbahnhof\"},\"description\":\"Berlin Hauptbahnhof, Europaplatz, Berlin, Deutschland\",\"id\":\"3f3350651fb1e3cc1a50e6cd5ed15adb106feb96\",\"place_id\":\"ChIJe-ff-71RqEcRqvy8lRR4PHo\"}],\"status\":\"OK\"}"
         };
@@ -75,9 +75,10 @@ public class CentralLogicTests {
                 "{\"candidates\":[{\"formatted_address\":\"Berlin, Deutschland\"}],\"status\":\"Error\"}",
                 "{\"candidates\":[{\"formatted_address\":\"Warschau, Polen\"}],\"status\":\"Ok\"}"};
 
+        DOSession session = new DOSession(0, Arrays.asList(stations), "test3", null,
+                null, null, 0, 0);
+
         IApiUser apiUser = new FakeApiUser(new String[0], addressText, autoCompleterText);
-        DOSession session = new DOSession(0, Arrays.asList(stations), "test1", null,
-                null, null);
         CentralLogic logic = new CentralLogic(
                 apiUser, new FakeSaveLoadHandler(new LinkedList<DOSession>(Arrays.asList(session))));
 
@@ -108,6 +109,16 @@ public class CentralLogicTests {
             Assert.assertTrue("second address should be Hauptbahnhof", result[1].equals("Berlin Hauptbahnhof, Europaplatz, Berlin, Deutschland"));
         } catch (DienstfahrtenException e) {
             Assert.assertFalse("should not have thrown an exception", true);
+        }
+    }
+
+    @Test
+    public void manualTest() {
+        CentralLogic logic = new CentralLogic(new ApiUser(), new FakeSaveLoadHandler(null));
+        try {
+            String[] result = logic.useAutoCompleter("w");
+        } catch (DienstfahrtenException e) {
+            e.printStackTrace();
         }
     }
 }

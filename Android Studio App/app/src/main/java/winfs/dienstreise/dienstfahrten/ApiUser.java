@@ -1,5 +1,7 @@
 package winfs.dienstreise.dienstfahrten;
 
+import android.provider.ContactsContract;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,6 +14,11 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Implementation of IApiUser, as used in our app
@@ -112,6 +119,7 @@ public class ApiUser implements IApiUser {
         }
         try {
             URL completeUrl;
+
             /*
       url of google maps api service
      */ /**
@@ -119,12 +127,19 @@ public class ApiUser implements IApiUser {
              */String googleUrl = "https://maps.googleapis.com/maps/api/";
             String urlString = googleUrl + url + (!"".equals(queryString) ? ("?" + queryString) : "");
             completeUrl = new URL(urlString);
-            HttpURLConnection con = (HttpURLConnection) completeUrl.openConnection();
-            con.setRequestMethod("GET");
-            InputStream response = con.getInputStream();
-            Scanner s = new Scanner(response).useDelimiter("\\A");
-            return s.hasNext() ? s.next() : "";
+
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            Future<String> response = executor.submit(new WebRequest(completeUrl));
+            executor.shutdown();
+            String test = response.get();
+            return test;
         } catch (IOException ex) {
+            return "";
+        }
+        catch (ExecutionException ex) {
+            return "";
+        }
+        catch (InterruptedException ex) {
             return "";
         }
     }
@@ -160,6 +175,23 @@ public class ApiUser implements IApiUser {
                 ? resultString.substring(0, resultString.length() - 1)
                 : resultString;
 
+    }
+
+    private class WebRequest implements Callable<String> {
+        private URL url;
+
+        public WebRequest(URL url) {
+            this.url = url;
+        }
+
+        @Override
+        public String call() throws Exception {
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            InputStream response = con.getInputStream();
+            Scanner s = new Scanner(response).useDelimiter("\\A");
+            return s.hasNext() ? s.next() : "";
+        }
     }
 
 }

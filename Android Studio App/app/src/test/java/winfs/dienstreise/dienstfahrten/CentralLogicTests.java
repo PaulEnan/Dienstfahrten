@@ -13,9 +13,9 @@ public class CentralLogicTests {
     @Test
     public void testCalculationOfMultipleAdresses() {
 
-        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, 0, "Berlin", null),
-                new DODestination(0, 0, 0, 0, "Hamburg", null),
-                new DODestination(0, 0, 0, 0, "Warschau", null)};
+        DODestination[] stations = new DODestination[]{
+                new DODestination(0, 10, 15.5, 1, "Hamburg", null),
+                new DODestination(0, 12.3, 25, 11, "Warschau", null)};
         String[] resultText = new String[]{
                 "{\"destination_addresses\":[\"Polen, Warschau\"],\"rows\":[{\"elements\":[{\"duration\":{\"text\":\"3 Stunden, 17 Minuten\",\"value\":11794},\"distance\":{\"text\":\"289 km\",\"value\":288796},\"status\":\"OK\"}]}],\"origin_addresses\":[\"Hamburg, Deutschland\"],\"status\":\"OK\"}",
                 "{\"destination_addresses\":[\"Hamburg, Deutschland\"],\"rows\":[{\"elements\":[{\"duration\":{\"text\":\"3 Stunden, 17 Minuten\",\"value\":11794},\"distance\":{\"text\":\"852 km\",\"value\":288796},\"status\":\"OK\"}]}],\"origin_addresses\":[\"Berlin, Deutschland\"],\"status\":\"OK\"}"};
@@ -27,7 +27,7 @@ public class CentralLogicTests {
 
         IApiUser apiUser = new FakeApiUser(resultText, addressText, new String[0]);
         DOSession session = new DOSession(0, Arrays.asList(stations), "test1", null,
-                 null, null, 0, 0);
+                 "Berlin", null, 0, 0);
         CentralLogic logic = new CentralLogic(
                 apiUser, new FakeSaveLoadHandler(new LinkedList<DOSession>(Arrays.asList(session))));
         String[] result = new String[0];
@@ -39,17 +39,19 @@ public class CentralLogicTests {
         double costs = Double.parseDouble(result[0]);
         Assert.assertEquals("should have gotten only one result", 1, result.length);
         Assert.assertEquals("should have returned 342.3 euros as costs", costs, 342.3, delta);
-        Assert.assertEquals("should have different final costs now", 342.3, session.getFinalCosts(), 0.0005);
+        Assert.assertEquals("should have different variable costs now", 342.3, session.getVariableCosts(), 0.0005);
+        Assert.assertEquals("should have 74.8 as fixed costs", 74.8, session.getFixedCosts(), 0.0005);
+        Assert.assertEquals("should have 417.1 as final costs", 417.1, session.getFinalCosts(), 0.0005);
     }
 
     @Test
     public void testCalculationWithInvalidName() {
-        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, 0, "Berlin", null),
+        DODestination[] stations = new DODestination[]{
                 new DODestination(0, 0, 0, 0, "Hamburg|Berlin", null),
                 new DODestination(0, 0, 0, 0, "Warschau", null)};
         IApiUser apiUser = new FakeApiUser(new String[0], new String[0], new String[0]);
         DOSession session = new DOSession(0, Arrays.asList(stations), "test2", null,
-                null, null, 0, 0);
+                "Berlin", null, 0, 0);
         CentralLogic logic = new CentralLogic(
                 apiUser, new FakeSaveLoadHandler(new LinkedList<DOSession>(Arrays.asList(session))));
         String[] result = new String[0];
@@ -64,7 +66,7 @@ public class CentralLogicTests {
 
     @Test
     public void testCalculateWithAutoCompleter() {
-        DODestination[] stations = new DODestination[]{new DODestination(0, 0, 0, 0, "Berlin", null),
+        DODestination[] stations = new DODestination[]{
                 new DODestination(0, 0, 0, 0, "Hamburg", null),
                 new DODestination(0, 0, 0, 0, "Warschau", null)};
         String[] autoCompleterText = new String[] {
@@ -76,7 +78,7 @@ public class CentralLogicTests {
                 "{\"candidates\":[{\"formatted_address\":\"Warschau, Polen\"}],\"status\":\"Ok\"}"};
 
         DOSession session = new DOSession(0, Arrays.asList(stations), "test3", null,
-                null, null, 0, 0);
+                "Berlin", null, 0, 0);
 
         IApiUser apiUser = new FakeApiUser(new String[0], addressText, autoCompleterText);
         CentralLogic logic = new CentralLogic(

@@ -114,7 +114,7 @@ public class CentralLogic {
                 throw new DienstfahrtenException(result);
             } else {
                 curSession.setVariableCosts(Double.parseDouble(result));
-                return new String[]{curSession.getFinalCosts() + ""};
+                return new String[]{curSession.getVariableCosts() + ""};
             }
         }
     }

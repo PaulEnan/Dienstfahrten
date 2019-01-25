@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,33 +43,26 @@ public class SummaryTab extends TabFragmentBase {
         variableCostsTextView = summaryTab.findViewById(R.id.variableCostsTextView);
         fixCostsTextView = summaryTab.findViewById(R.id.fixCostsTextView);
         totalCostsTextView = summaryTab.findViewById(R.id.totalCostsTextView);
-        summaryTab.findViewById(R.id.saveButton).setOnClickListener(new View.OnClickListener() {
+        Button saveButton = summaryTab.findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!validateContent()) {
-                    Toast.makeText(getContext(), "Speichern nicht möglich durch inkorrekte Werte", Toast.LENGTH_LONG);
-                } else {
+                try {
+                    Overview.LOGIC.SaveSession();
                     Intent openOverview = new Intent(getContext(), Overview.class);
                     startActivity(openOverview);
+                } catch (DienstfahrtenException e) {
+                    Toast.makeText(getContext(),
+                            "Speichern aktuell nicht möglich",
+                            Toast.LENGTH_LONG).show();
                 }
+
             }
         });
 
         loadSession();
 
         return summaryTab;
-    }
-
-    @Override
-    boolean validateContent() {
-        boolean valid = true;
-        for (TabFragmentBase tab : tpa.mFragmentList) {
-            valid = tab.validateContent();
-            if (!valid) {
-                return valid;
-            }
-        }
-        return valid;
     }
 
     @Override
@@ -90,7 +84,7 @@ public class SummaryTab extends TabFragmentBase {
                     throw new DienstfahrtenException(Messages.NotIdentifiable());
                 }
             } catch (DienstfahrtenException e) {
-                Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG);
+                Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             headingTextView.setText("Zusammenfassung für " + session.title);
@@ -99,10 +93,10 @@ public class SummaryTab extends TabFragmentBase {
             startTextView.setText(session.startLocation);
             intermediateTextView.setText(session.stations.size() - 1 + " Zwischenziele");
             goalTextView.setText(session.getLastLocation());
-            kilometresTextView.setText(String.format(Locale.GERMAN,"%10.2f", (session.getVariableCosts() / .3)));
-            variableCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getVariableCosts()));
-            fixCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFixedCosts()));
-            totalCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFinalCosts()));
+            kilometresTextView.setText(String.format(Locale.GERMAN, "%10.2f", (session.getVariableCosts() / .3)));
+            variableCostsTextView.setText(String.format(Locale.GERMAN, "%10.2f", session.getVariableCosts()));
+            fixCostsTextView.setText(String.format(Locale.GERMAN, "%10.2f", session.getFixedCosts()));
+            totalCostsTextView.setText(String.format(Locale.GERMAN, "%10.2f", session.getFinalCosts()));
         }
 
     }

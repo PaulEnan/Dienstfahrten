@@ -233,12 +233,6 @@ public class DestinationTab extends TabFragmentBase {
     }
 
     @Override
-    boolean validateContent() {
-        //validate
-        return false;
-    }
-
-    @Override
     void removeTab() {
         if (!tpa.removeFragment(pos - 1)) {
             Toast.makeText(getContext(), "Du kannst dein einziges Ziel nicht entfernen", Toast.LENGTH_LONG);

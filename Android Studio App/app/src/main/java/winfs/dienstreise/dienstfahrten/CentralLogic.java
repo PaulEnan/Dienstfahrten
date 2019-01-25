@@ -171,10 +171,9 @@ public class CentralLogic {
      */
     public void changeDate(String date) {
         if (curSession != null) {
-            String string = date;
             DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
             try {
-                Date changedDate = format.parse(string);
+                Date changedDate = format.parse(date);
                 curSession.startDate = changedDate;
             } catch (ParseException e) {
             }

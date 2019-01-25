@@ -71,8 +71,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
 
         String createTableDestination = "CREATE TABLE " + DESTINATIONTABLE + " ( d" + PK
                 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SLEEPCOSTS
-                + " INTEGER, " + FOODCOSTS + " INTEGER, " + TRIPEXTRACOSTS
-                + " INTEGER, " + DESTLOCATION + " TEXT, " + OCCASION + " TEXT)";
+                + " REAL, " + FOODCOSTS + " REAL, " + TRIPEXTRACOSTS
+                + " REAL, " + DESTLOCATION + " TEXT, " + OCCASION + " TEXT)";
 
         String createTableSessionDest = "CREATE TABLE " + SESSIONDESTTABLE + " (" + SESSIONID
                 + " INTEGER, " + DESTINATIONID + " INTEGER, FOREIGN KEY ("

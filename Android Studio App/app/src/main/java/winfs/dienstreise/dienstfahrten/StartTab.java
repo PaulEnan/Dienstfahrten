@@ -106,7 +106,6 @@ public class StartTab extends TabFragmentBase {
 
             @Override
             public void afterTextChanged(Editable s) {
-
                 Overview.LOGIC.changeDate(editTextStartDate.getText().toString());
             }
         });
@@ -204,11 +203,6 @@ public class StartTab extends TabFragmentBase {
             public void onErrorResponse(VolleyError error) {
             }
         });
-    }
-
-    @Override
-    boolean validateContent() {
-        return false;
     }
 
     @Override

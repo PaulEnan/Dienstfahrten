@@ -206,16 +206,6 @@ public class StartTab extends TabFragmentBase {
     }
 
     @Override
-    void removeTab() {
-        //nothing
-    }
-
-    @Override
-    void addTab() {
-        tpa.addFragment(0);
-    }
-
-    @Override
     void loadSession() {
         if (!(session == null || session.isDummy)) {
             editTextTitle.setText(session.title);

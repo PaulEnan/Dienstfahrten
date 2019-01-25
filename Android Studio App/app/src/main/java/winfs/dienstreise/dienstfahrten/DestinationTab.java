@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -32,8 +31,6 @@ public class DestinationTab extends TabFragmentBase {
     TextView editTextSleepCosts;
     TextView editTextOccasion;
     AutoCompleteTextView autoCompleteDestLocation;
-    FloatingActionButton addDest;
-    FloatingActionButton removeDest;
     private Handler handler;
     private static final int TRIGGER_AUTO_COMPLETE = 100;
     private static final long AUTO_COMPLETE_DELAY = 300;
@@ -50,22 +47,6 @@ public class DestinationTab extends TabFragmentBase {
         editTextFoodCosts = destTab.findViewById(R.id.editTextFoodCosts);
         editTextSleepCosts = destTab.findViewById(R.id.editTextSleepCosts);
         autoCompleteDestLocation = destTab.findViewById(R.id.autoCompleteDestLocation);
-        addDest = destTab.findViewById(R.id.addDest);
-        removeDest = destTab.findViewById(R.id.removeDest);
-
-        addDest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addTab();
-            }
-        });
-
-        removeDest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeTab();
-            }
-        });
 
         editTextExtraCosts.addTextChangedListener(new TextWatcher() {
             @Override
@@ -230,29 +211,6 @@ public class DestinationTab extends TabFragmentBase {
     void setVars(DODestination dest, int pos) {
         this.pos = pos;
         this.dest = dest;
-    }
-
-    @Override
-    void removeTab() {
-        if (!tpa.removeFragment(pos - 1)) {
-            Toast.makeText(getContext(), "Du kannst dein einziges Ziel nicht entfernen", Toast.LENGTH_LONG);
-        }
-        else {
-            try {
-                String[] result = Overview.LOGIC.calculateCosts();
-                if (result.length > 1) {
-                    throw new DienstfahrtenException(Messages.NotIdentifiable());
-                }
-            } catch (DienstfahrtenException e) {
-                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG);
-            }
-        }
-    }
-
-    @Override
-    void addTab() {
-        tpa.addFragment(pos);
-        Overview.LOGIC.addEmptyStation(pos);
     }
 
     @Override

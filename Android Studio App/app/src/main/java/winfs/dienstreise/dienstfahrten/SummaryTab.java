@@ -66,16 +66,6 @@ public class SummaryTab extends TabFragmentBase {
     }
 
     @Override
-    void removeTab() {
-        //do nothing
-    }
-
-    @Override
-    void addTab() {
-        //do nothing
-    }
-
-    @Override
     void loadSession() {
         if (!(session == null || session.isDummy)) {
             try {

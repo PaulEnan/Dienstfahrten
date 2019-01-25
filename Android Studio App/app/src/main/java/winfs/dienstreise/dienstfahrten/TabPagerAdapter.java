@@ -25,20 +25,17 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
         List<TabFragmentBase> list = new ArrayList<>();
         StartTab st = new StartTab();
         st.session = session;
-        st.tpa = this;
         list.add(st);
         int pos = 1;
         for (DODestination dest : session.getStations()) {
             DestinationTab destTab = new DestinationTab();
             destTab.setVars(dest, pos);
-            destTab.tpa = this;
             list.add(destTab);
             pos++;
         }
 
         SummaryTab summaryTab = new SummaryTab();
         summaryTab.session = session;
-        summaryTab.tpa = this;
         list.add(summaryTab);
 
         return list;
@@ -68,25 +65,5 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         // Every Station + the summary tab + start tab
         return mFragmentList.size();
-    }
-
-    public void addFragment(int position) {
-        DestinationTab dt = new DestinationTab();
-        session.addStation(new DODestination(), position);
-        dt.setVars(session.getStationAt(position), position);
-        mFragmentList.add(position, dt);
-        tabLayout.addTab(new TabLayout.Tab(), position + 1);
-        notifyDataSetChanged();
-    }
-
-    public boolean removeFragment(int position) {
-        if (!session.onlyOneDestination()) {
-            mFragmentList.remove(position);
-
-            notifyDataSetChanged();
-            return true;
-        }
-
-        return false;
     }
 }

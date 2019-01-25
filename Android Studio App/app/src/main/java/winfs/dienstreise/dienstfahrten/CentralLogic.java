@@ -85,6 +85,7 @@ public class CentralLogic {
             }
         } else {
             curSession = new DOSession();
+            curSession.addStation(new DODestination());
         }
         return curSession;
     }

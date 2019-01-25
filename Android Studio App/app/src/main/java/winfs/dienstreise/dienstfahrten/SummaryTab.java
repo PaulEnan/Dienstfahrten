@@ -84,21 +84,24 @@ public class SummaryTab extends TabFragmentBase {
 
     @Override
     void loadSession() {
-        try {
-            Overview.LOGIC.calculateCosts();
-        } catch (DienstfahrtenException e) {
-            Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG);
+        if (!(session == null || session.isDummy)) {
+            try {
+                Overview.LOGIC.calculateCosts();
+            } catch (DienstfahrtenException e) {
+                Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG);
+            }
+
+            headingTextView.setText("Zusammenfassung für " + session.title);
+            startDateTextView.setText(DatabaseHelper.GERMANDATEFORMAT.format(session.startDate));
+            personTextView.setText(session.person.toString());
+            startTextView.setText(session.startLocation);
+            intermediateTextView.setText(session.stations.size() - 1 + " Zwischenziele");
+            goalTextView.setText(session.getLastLocation());
+            kilometresTextView.setText(String.format(Locale.GERMAN,"%10.2f", (session.getVariableCosts() / .3)));
+            variableCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getVariableCosts()));
+            fixCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFixedCosts()));
+            totalCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFinalCosts()));
         }
 
-        headingTextView.setText("Zusammenfassung für " + session.title);
-        startDateTextView.setText(DatabaseHelper.GERMANDATEFORMAT.format(session.startDate));
-        personTextView.setText(session.person.toString());
-        startTextView.setText(session.startLocation);
-        intermediateTextView.setText(session.stations.size() - 1 + " Zwischenziele");
-        goalTextView.setText(session.getLastLocation());
-        kilometresTextView.setText(String.format(Locale.GERMAN,"%10.2f", (session.getVariableCosts() / .3)));
-        variableCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getVariableCosts()));
-        fixCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFixedCosts()));
-        totalCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFinalCosts()));
     }
 }

@@ -8,9 +8,14 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The central logic
@@ -151,12 +156,79 @@ public class CentralLogic {
         }
     }
 
-    public void changePerson(DOPerson person) {
-        curSession.setPerson(person);
+    public void changeDate(String date) {
+        if (curSession != null) {
+            String string = "date";
+            DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
+            try {
+                Date changedDate = format.parse(string);
+                curSession.startDate = changedDate;
+            } catch (ParseException e) {
+            }
+        }
+
+    }
+
+    public void changeDuration(String duration) {
+        if (curSession != null) {
+            curSession.duration = Integer.parseInt(duration);
+        }
+    }
+
+    public void changePreName(String preName) {
+        if (curSession != null) {
+            if (curSession.person == null) {
+                curSession.person = new DOPerson("", "");
+            }
+            curSession.person.prename = preName;
+        }
+    }
+
+    public void changeSurName(String surName) {
+        if (curSession != null) {
+            if (curSession.person == null) {
+                curSession.person = new DOPerson("", "");
+            }
+        }
+        curSession.person.surname = surName;
+    }
+
+    public void changeDestination(int index, double sleepCosts, double foodCosts,
+                               double tripExtraCosts, String location, String occasion) {
+        List<DODestination> dests = curSession.getStations();
+        if (dests != null && index >= 0) {
+            if (dests.size() == 0 && index == 0) {
+                dests.add(new DODestination(0, 0, 0,
+                "", ""));
+            }
+            if (dests.size() > index) {
+
+            }
+            dests.get(index).sleepCosts = sleepCosts;
+            dests.get(index).foodCosts = foodCosts;
+            dests.get(index).tripExtraCosts = tripExtraCosts;
+            dests.get(index).location = location;
+            dests.get(index).occasion = occasion;
+        }
+    }
+
+    public void changeLocation(int index, String location) {
+        List<DODestination> dests = curSession != null ? curSession.getStations() : null;
+        if (dests != null && index >= 0) {
+            if (dests.size() == 0 && index == 0) {
+                dests.add(new DODestination(0, 0, 0,
+                        "", ""));
+            }
+            if (dests.size() > index) {
+                dests.get(index).location = location;
+            }
+        }
     }
 
     public void changeTitle(String title) {
-        curSession.setTitle(title);
+        if (curSession != null) {
+            curSession.title = title;
+        }
     }
 
     public static void make(Context ctx, String text, Response.Listener<List<String>>

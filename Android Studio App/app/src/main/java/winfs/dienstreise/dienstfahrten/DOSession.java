@@ -54,8 +54,6 @@ public class DOSession {
         this.stations.remove(index);
     }
 
-    public void setTitle(String title) { this.title = title; }
-
     void setPerson(DOPerson person) {
         this.person = person;
     }

@@ -49,6 +49,82 @@ public class StartTab extends TabFragmentBase {
         editTextStartDate = startTab.findViewById(R.id.editTextStartDate);
         editTextDuration = startTab.findViewById(R.id.editTextDuration);
 
+        editTextPrename.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changePreName(editTextPrename.getText().toString());
+            }
+        });
+
+        editTextSurname.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeSurName(editTextSurname.getText().toString());
+            }
+        });
+
+        editTextTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeTitle(editTextTitle.getText().toString());
+            }
+        });
+
+        editTextStartDate.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                Overview.LOGIC.changeDate(editTextStartDate.getText().toString());
+            }
+        });
+
+        editTextDuration.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeDuration(editTextDuration.getText().toString());
+            }
+        });
+
         //region AutoCompleter
         final Context context = this.getContext();
         final AppCompatAutoCompleteTextView autoCompleteTextView = startTab.findViewById
@@ -85,6 +161,7 @@ public class StartTab extends TabFragmentBase {
 
             @Override
             public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeLocation(0, autoCompleteTextView.getText().toString());
             }
         });
         handler = new Handler(new Handler.Callback() {

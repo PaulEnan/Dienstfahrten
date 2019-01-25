@@ -1,9 +1,9 @@
 package winfs.dienstreise.dienstfahrten;
 
-import java.util.Date;
 
 public class DODestination {
 
+    boolean isDummy;
     int id;
     double sleepCosts;
     double foodCosts;
@@ -11,7 +11,11 @@ public class DODestination {
     String location;
     String occasion;
 
-    public DODestination(double sleepCosts, double foodCosts, double tripExtraCosts,
+    DODestination() {
+        isDummy = true;
+    }
+
+    DODestination(double sleepCosts, double foodCosts, double tripExtraCosts,
                          String location, String occasion) {
         this.sleepCosts = sleepCosts;
         this.foodCosts = foodCosts;
@@ -20,8 +24,8 @@ public class DODestination {
         this.occasion = occasion;
     }
 
-    public DODestination(int id, double sleepCosts, double foodCosts, double tripExtraCosts,
-                         String location, String occasion) {
+    DODestination(int id, double sleepCosts, double foodCosts, double tripExtraCosts,
+                  String location, String occasion) {
         this.id = id;
         this.sleepCosts = sleepCosts;
         this.foodCosts = foodCosts;

@@ -135,7 +135,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/dateTextView"
+        android:id="@+id/startDateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/TextView0"
@@ -148,7 +148,7 @@
         android:layout_width="226dp"
         android:layout_height="41dp"
         android:layout_alignTop="@+id/TextView1"
-        android:layout_alignEnd="@+id/dateTextView"
+        android:layout_alignEnd="@+id/startDateTextView"
         android:text="lalala"
         android:textAlignment="viewEnd" />
 

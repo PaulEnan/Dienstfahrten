@@ -37,11 +37,9 @@ public class VoyageDetail extends AppCompatActivity {
             setContentView(R.layout.activity_detail_view);
             // Create the adapter that will return a fragment for each of the
             // primary sections of the activity.
-            mSectionsPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), session, this);
 
             // Set up the ViewPager with the sections adapter.
             mViewPager = findViewById(R.id.container);
-            mViewPager.setAdapter(mSectionsPagerAdapter);
 
             TabLayout tabLayout = findViewById(R.id.tabsPanel);
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -60,6 +58,9 @@ public class VoyageDetail extends AppCompatActivity {
                 }
             });
 
+            mSectionsPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), session, tabLayout);
+
+            mViewPager.setAdapter(mSectionsPagerAdapter);
             mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
             tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         } catch (DienstfahrtenException e) {

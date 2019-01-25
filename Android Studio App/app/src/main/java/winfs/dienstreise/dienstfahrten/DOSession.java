@@ -18,7 +18,7 @@ public class DOSession {
     DOPerson person;
     String startLocation;
     Date startDate;
-    double variableCosts;
+    private double variableCosts;
 
     public DOSession() {
         isDummy = true;
@@ -38,37 +38,37 @@ public class DOSession {
         this.variableCosts = variableCosts;
     }
 
-    public List<DODestination> getStations() {
+    List<DODestination> getStations() {
         return stations;
     }
 
-    public void addStation(DODestination station, int index) {
+    void addStation(DODestination station, int index) {
         this.stations.add(index, station);
     }
-    
-    public void addStation(DODestination station) {
+
+    void addStation(DODestination station) {
         this.stations.add(station);
     }
-    
-    public void removeStation(int index) {
+
+    void removeStation(int index) {
         this.stations.remove(index);
     }
 
-    public String getTitle() { return this.title; }
-
     public void setTitle(String title) { this.title = title; }
 
-    public void setPerson(DOPerson person) { this.person = person; }
+    void setPerson(DOPerson person) {
+        this.person = person;
+    }
 
-    public void setId(int id) {
+    void setId(int id) {
         this.id = id;
     }
 
-    public double getFinalCosts() {
+    double getFinalCosts() {
         return getVariableCosts() + getFixedCosts();
     }
 
-    public void setVariableCosts(double costs) {
+    void setVariableCosts(double costs) {
         this.variableCosts = costs;
     }
 
@@ -83,7 +83,15 @@ public class DOSession {
 
     double getVariableCosts() { return variableCosts; }
 
-    public String getLastLocation() {
+    String getLastLocation() {
         return stations.get(stations.size() - 1).location;
+    }
+
+    boolean onlyOneDestination() {
+        return stations.size() == 1;
+    }
+
+    DODestination getStationAt(int position) {
+        return stations.get(position);
     }
 }

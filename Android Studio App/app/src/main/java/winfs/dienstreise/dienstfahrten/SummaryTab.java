@@ -1,38 +1,97 @@
 package winfs.dienstreise.dienstfahrten;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 
-public class SummaryTab extends Fragment implements ICustomTab{
+public class SummaryTab extends TabFragmentBase {
 
     DOSession session;
+    TextView headingTextView;
+    TextView startDateTextView;
+    TextView personTextView;
+    TextView startTextView;
+    TextView intermediateTextView;
+    TextView goalTextView;
+    TextView kilometresTextView;
+    TextView variableCostsTextView;
+    TextView fixCostsTextView;
+    TextView totalCostsTextView;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View startTab = inflater.inflate(R.layout.fragment_detail_view_summary, container, false);
+        View summaryTab = inflater.inflate(R.layout.fragment_detail_view_summary, container, false);
 
-        TextView headingTextView = startTab.findViewById(R.id.headingTextView);
-        TextView dateTextView = startTab.findViewById(R.id.dateTextView);
-        TextView personTextView = startTab.findViewById(R.id.personTextView);
-        TextView startTextView = startTab.findViewById(R.id.startTextView);
-        TextView intermediateTextView = startTab.findViewById(R.id.intermediateTextView);
-        TextView goalTextView = startTab.findViewById(R.id.goalTextView);
-        TextView kilometresTextView = startTab.findViewById(R.id.kilometresTextView);
-        TextView variableCostsTextView = startTab.findViewById(R.id.variableCostsTextView);
-        TextView fixCostsTextView = startTab.findViewById(R.id.fixCostsTextView);
-        TextView totalCostsTextView = startTab.findViewById(R.id.totalCostsTextView);
+        headingTextView = summaryTab.findViewById(R.id.headingTextView);
+        startDateTextView = summaryTab.findViewById(R.id.startDateTextView);
+        personTextView = summaryTab.findViewById(R.id.personTextView);
+        startTextView = summaryTab.findViewById(R.id.startTextView);
+        intermediateTextView = summaryTab.findViewById(R.id.intermediateTextView);
+        goalTextView = summaryTab.findViewById(R.id.goalTextView);
+        kilometresTextView = summaryTab.findViewById(R.id.kilometresTextView);
+        variableCostsTextView = summaryTab.findViewById(R.id.variableCostsTextView);
+        fixCostsTextView = summaryTab.findViewById(R.id.fixCostsTextView);
+        totalCostsTextView = summaryTab.findViewById(R.id.totalCostsTextView);
+        summaryTab.findViewById(R.id.saveButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!validateContent()) {
+                    Toast.makeText(getContext(), "Speichern nicht möglich durch inkorrekte Werte", Toast.LENGTH_LONG);
+                } else {
+                    Intent openOverview = new Intent(getContext(), Overview.class);
+
+                    startActivity(openOverview);
+                }
+            }
+        });
+
+        loadSession();
+
+        return summaryTab;
+    }
+
+    @Override
+    boolean validateContent() {
+        boolean valid = true;
+        for (TabFragmentBase tab : tpa.mFragmentList) {
+            valid = tab.validateContent();
+            if (!valid) {
+                return valid;
+            }
+        }
+        return valid;
+    }
+
+    @Override
+    void removeTab() {
+        //do nothing
+    }
+
+    @Override
+    void addTab() {
+        //do nothing
+    }
+
+    @Override
+    void loadSession() {
+        try {
+            Overview.LOGIC.calculateCosts();
+        } catch (DienstfahrtenException e) {
+            Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG);
+        }
 
         headingTextView.setText("Zusammenfassung für " + session.title);
-        dateTextView.setText(VoyageAdapter.GERMANDATEFORMAT.format(session.startDate));
+        startDateTextView.setText(DatabaseHelper.GERMANDATEFORMAT.format(session.startDate));
         personTextView.setText(session.person.toString());
         startTextView.setText(session.startLocation);
         intermediateTextView.setText(session.stations.size() - 1 + " Zwischenziele");
@@ -41,17 +100,5 @@ public class SummaryTab extends Fragment implements ICustomTab{
         variableCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getVariableCosts()));
         fixCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFixedCosts()));
         totalCostsTextView.setText(String.format(Locale.GERMAN,"%10.2f", session.getFinalCosts()));
-
-
-        return startTab;
-    }
-
-    public void setSession(DOSession session) {
-        this.session = session;
-    }
-
-    @Override
-    public void performTabaction() {
-
     }
 }

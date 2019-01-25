@@ -7,7 +7,6 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -18,21 +17,20 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import java.util.List;
 
-public class DestinationTab extends Fragment implements ICustomTab {
+public class DestinationTab extends TabFragmentBase {
 
-    DOSession session;
-    boolean isOnly;
     DODestination dest;
     TextView editTextExtraCosts;
     TextView editTextFoodCosts;
     TextView editTextSleepCosts;
-    TextView editTextOccassion;
+    TextView editTextOccasion;
     AutoCompleteTextView autoCompleteDestLocation;
     FloatingActionButton addDest;
     FloatingActionButton removeDest;
@@ -40,6 +38,7 @@ public class DestinationTab extends Fragment implements ICustomTab {
     private static final int TRIGGER_AUTO_COMPLETE = 100;
     private static final long AUTO_COMPLETE_DELAY = 300;
     AutoCompleterAdapter autoCompleterAdapter;
+    private int pos;
 
     @Nullable
     @Override
@@ -47,19 +46,28 @@ public class DestinationTab extends Fragment implements ICustomTab {
         View destTab = inflater.inflate(R.layout.fragment_detail_view_destination, container, false);
 
         editTextExtraCosts = destTab.findViewById(R.id.editTextExtraCosts);
-        editTextOccassion = destTab.findViewById(R.id.editTextOccassion);
+        editTextOccasion = destTab.findViewById(R.id.editTextOccassion);
         editTextFoodCosts = destTab.findViewById(R.id.editTextFoodCosts);
         editTextSleepCosts = destTab.findViewById(R.id.editTextSleepCosts);
         autoCompleteDestLocation = destTab.findViewById(R.id.autoCompleteDestLocation);
         addDest = destTab.findViewById(R.id.addDest);
         removeDest = destTab.findViewById(R.id.removeDest);
 
+        addDest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTab();
+            }
+        });
 
+        removeDest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeTab();
+            }
+        });
 
-        editTextExtraCosts.setText(dest.tripExtraCosts + "");
-        editTextOccassion.setText(dest.occasion);
-        editTextSleepCosts.setText(dest.sleepCosts + "");
-        editTextFoodCosts.setText(dest.foodCosts + "");
+        //region AutoCompleter
         final Context context = this.getContext();
         final AppCompatAutoCompleteTextView autoCompleteTextView = destTab.findViewById
                 (R.id.autoCompleteDestLocation);
@@ -82,7 +90,6 @@ public class DestinationTab extends Fragment implements ICustomTab {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int
                     count, int after) {
-
             }
 
             @Override
@@ -96,7 +103,6 @@ public class DestinationTab extends Fragment implements ICustomTab {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
         handler = new Handler(new Handler.Callback() {
@@ -110,13 +116,9 @@ public class DestinationTab extends Fragment implements ICustomTab {
                 return false;
             }
         });
+        //endregion
 
-        if (!(session == null || session.isDummy)) {
-
-        }
-
-        removeDest.setEnabled(isOnly);
-
+        loadSession();
         return destTab;
     }
 
@@ -136,26 +138,37 @@ public class DestinationTab extends Fragment implements ICustomTab {
         });
     }
 
-    public void setDest(DODestination dest) {
+    void setVars(DODestination dest, int pos) {
+        this.pos = pos;
         this.dest = dest;
     }
 
-    void setIsOnly(boolean isOnly){
-        this.isOnly = isOnly;
+    @Override
+    boolean validateContent() {
+        //validate
+        return false;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        dest.location = autoCompleteDestLocation.getText().toString();
-        dest.occasion = editTextOccassion.getText().toString();
-        dest.foodCosts = Double.parseDouble(editTextFoodCosts.getText().toString());
-        dest.sleepCosts = Double.parseDouble(editTextFoodCosts.getText().toString());
-        dest.tripExtraCosts = Double.parseDouble(editTextFoodCosts.getText().toString());
+    void removeTab() {
+        if (!tpa.removeFragment(pos - 1)) {
+            Toast.makeText(getContext(), "Du kannst dein einziges Ziel nicht entfernen", Toast.LENGTH_LONG);
+        }
     }
 
     @Override
-    public void performTabaction() {
+    void addTab() {
+        tpa.addFragment(pos);
+    }
 
+    @Override
+    void loadSession() {
+        if (!(dest == null || dest.isDummy)) {
+            editTextExtraCosts.setText(dest.tripExtraCosts + "");
+            editTextOccasion.setText(dest.occasion);
+            editTextSleepCosts.setText(dest.sleepCosts + "");
+            editTextFoodCosts.setText(dest.foodCosts + "");
+            autoCompleteDestLocation.setText(dest.location);
+        }
     }
 }

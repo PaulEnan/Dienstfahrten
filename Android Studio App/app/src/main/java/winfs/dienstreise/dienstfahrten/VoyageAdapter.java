@@ -17,7 +17,6 @@ import java.util.Locale;
 
 public class VoyageAdapter extends BaseAdapter {
 
-    static SimpleDateFormat GERMANDATEFORMAT = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
     LayoutInflater mInflater;
     List<DOSession> voyages;
 
@@ -64,7 +63,7 @@ public class VoyageAdapter extends BaseAdapter {
 
         String title = voyage.title;
         String tour = voyage.startLocation + " zu " + voyage.getStations().size() + " Orten";
-        String date = GERMANDATEFORMAT.format(voyage.startDate);
+        String date = DatabaseHelper.GERMANDATEFORMAT.format(voyage.startDate);
         String totalCosts = String.format(Locale.GERMAN, "%10.2f €", voyage.getFinalCosts());
 
         titleTextView.setText(title);

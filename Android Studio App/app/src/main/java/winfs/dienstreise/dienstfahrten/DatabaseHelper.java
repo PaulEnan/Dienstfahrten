@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler {
 
+    static SimpleDateFormat GERMANDATEFORMAT = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
     SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
     private static final String DBNAME = "voyage_calculation";
 

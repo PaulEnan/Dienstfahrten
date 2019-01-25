@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -15,25 +14,42 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import java.util.List;
 
-public class StartTab extends Fragment implements ICustomTab {
+public class StartTab extends TabFragmentBase {
 
     DOSession session;
     private Handler handler;
     private static final int TRIGGER_AUTO_COMPLETE = 100;
     private static final long AUTO_COMPLETE_DELAY = 300;
+    AppCompatAutoCompleteTextView autoCompleteTextView;
     AutoCompleterAdapter autoCompleterAdapter;
+    EditText editTextTitle;
+    EditText editTextPrename;
+    EditText editTextSurname;
+    EditText editTextStartDate;
+    EditText editTextDuration;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View startTab = inflater.inflate(R.layout.fragment_detail_view_start, container, false);
 
+
+        editTextTitle = startTab.findViewById(R.id.editTextTitle);
+        autoCompleteTextView = startTab.findViewById(R.id.autoCompleteStartLocation);
+        editTextPrename = startTab.findViewById(R.id.editTextPrename);
+        editTextSurname = startTab.findViewById(R.id.editTextSurname);
+        editTextStartDate = startTab.findViewById(R.id.editTextStartDate);
+        editTextDuration = startTab.findViewById(R.id.editTextDuration);
+
+        //region AutoCompleter
         final Context context = this.getContext();
         final AppCompatAutoCompleteTextView autoCompleteTextView = startTab.findViewById
                 (R.id.autoCompleteStartLocation);
@@ -56,7 +72,6 @@ public class StartTab extends Fragment implements ICustomTab {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int
                     count, int after) {
-
             }
 
             @Override
@@ -70,7 +85,6 @@ public class StartTab extends Fragment implements ICustomTab {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
         handler = new Handler(new Handler.Callback() {
@@ -84,10 +98,10 @@ public class StartTab extends Fragment implements ICustomTab {
                 return false;
             }
         });
+        //endregion
 
-        if (!(session == null || session.isDummy)) {
+        loadSession();
 
-        }
         return startTab;
     }
 
@@ -106,12 +120,30 @@ public class StartTab extends Fragment implements ICustomTab {
         });
     }
 
-    public void setSession(DOSession session) {
-        this.session = session;
+    @Override
+    boolean validateContent() {
+        return false;
     }
 
     @Override
-    public void performTabaction() {
+    void removeTab() {
+        //nothing
+    }
 
+    @Override
+    void addTab() {
+        tpa.addFragment(0);
+    }
+
+    @Override
+    void loadSession() {
+        if (!(session == null || session.isDummy)) {
+            editTextTitle.setText(session.title);
+            editTextPrename.setText(session.person.prename);
+            editTextSurname.setText(session.person.surname);
+            editTextStartDate.setText(DatabaseHelper.GERMANDATEFORMAT.format(session.startDate));
+            editTextDuration.setText(session.duration + "");
+            autoCompleteTextView.setText(session.startLocation);
+        }
     }
 }

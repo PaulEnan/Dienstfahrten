@@ -65,13 +65,14 @@ public class CentralLogic {
     }
 
     /**
-     * saves a session
-     * @param session the session
+     * saves the current session
      * @throws DienstfahrtenException gets thrown if something goes wrong
      */
-    public void SaveSession(DOSession session) throws DienstfahrtenException {
-        if (!saveLoadHandler.Save(session)) {
-            throw new DienstfahrtenException("Speichern nicht möglich");
+    public void SaveSession() throws DienstfahrtenException {
+        if (curSession != null) {
+            if (!saveLoadHandler.Save(curSession)) {
+                throw new DienstfahrtenException("Speichern nicht möglich");
+            }
         }
     }
 
@@ -250,9 +251,9 @@ public class CentralLogic {
     }
 
     /**
-     *
-     * @param index
-     * @param location
+     * changes only the location of a destination at the given index for current session
+     * @param index index
+     * @param location location for destination
      */
     public void changeLocation(int index, String location) {
         List<DODestination> dests = curSession != null ? curSession.getStations() : null;
@@ -267,24 +268,43 @@ public class CentralLogic {
         }
     }
 
+    /**
+     * changes the title of the current session
+     * @param title title
+     */
     public void changeTitle(String title) {
         if (curSession != null) {
             curSession.title = title;
         }
     }
 
+    /**
+     * changes the starting location for current session
+     * @param startLocation startinglocation
+     */
     public void changeStartingLocation(String startLocation) {
         if (curSession != null) {
             this.curSession.startLocation = startLocation;
         }
     }
 
+    /**
+     * adds an empty station for current session at given index
+     * @param index the index
+     */
     public void addEmptyStation(int index) {
         if (curSession != null && curSession.getStations() != null) {
             curSession.stations.add(index, new DODestination());
         }
     }
 
+    /**
+     * ma
+     * @param ctx
+     * @param text
+     * @param listener
+     * @param errorListener
+     */
     public static void make(Context ctx, String text, Response.Listener<List<String>>
             listener, Response.ErrorListener errorListener) {
         try {

@@ -105,44 +105,88 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
     @Override
     public void Save(DOSession session) throws SaveLoadException {
         SQLiteDatabase db = this.getWritableDatabase();
-        int id;
-        try {
-            ContentValues cv = new ContentValues();
-            cv.put(PRENAME, session.person.prename);
-            cv.put(SURNAME, session.person.surname);
-            id = (int) db.insert(PERSONSTABLE, null, cv);
-            session.person.setID(id);
-            cv.clear();
-
-            cv.put(STARTLOCATION, session.startLocation);
-            cv.put(PERSONID, session.person.id);
-            cv.put(STARTDATE, session.startDate.toString());
-            cv.put(TITLE, session.title);
-            cv.put(DURATION, session.duration);
-            id = (int) db.insert(SESSIONTABLE, null, cv);
-            session.setId(id);
-            cv.clear();
-
-            for (DODestination dest : session.getStations()) {
-
-                cv.put(FOODCOSTS, dest.foodCosts);
-                cv.put(SLEEPCOSTS, dest.sleepCosts);
-                cv.put(TRIPEXTRACOSTS, dest.tripExtraCosts);
-                cv.put(DESTLOCATION, dest.location);
-                cv.put(OCCASION, dest.occasion);
-                id = (int) db.insert(DESTINATIONTABLE, null, cv);
-                dest.setId(id);
+        if (session.isDummy)
+        {
+            int id;
+            try {
+                ContentValues cv = new ContentValues();
+                cv.put(PRENAME, session.person.prename);
+                cv.put(SURNAME, session.person.surname);
+                id = (int) db.insert(PERSONSTABLE, null, cv);
+                session.person.setID(id);
                 cv.clear();
 
-                cv.put(SESSIONID, session.id);
-                cv.put(DESTINATIONID, dest.id);
-                db.insert(SESSIONDESTTABLE, null, cv);
+                cv.put(STARTLOCATION, session.startLocation);
+                cv.put(PERSONID, session.person.id);
+                cv.put(STARTDATE, session.startDate.toString());
+                cv.put(TITLE, session.title);
+                cv.put(DURATION, session.duration);
+                id = (int) db.insert(SESSIONTABLE, null, cv);
+                session.setId(id);
+                cv.clear();
+
+                for (DODestination dest : session.getStations()) {
+
+                    cv.put(FOODCOSTS, dest.foodCosts);
+                    cv.put(SLEEPCOSTS, dest.sleepCosts);
+                    cv.put(TRIPEXTRACOSTS, dest.tripExtraCosts);
+                    cv.put(DESTLOCATION, dest.location);
+                    cv.put(OCCASION, dest.occasion);
+                    id = (int) db.insert(DESTINATIONTABLE, null, cv);
+                    dest.setId(id);
+                    cv.clear();
+
+                    cv.put(SESSIONID, session.id);
+                    cv.put(DESTINATIONID, dest.id);
+                    db.insert(SESSIONDESTTABLE, null, cv);
+                }
+
+
+            } catch (Exception ex) {
+                throw new SaveLoadException(ex.getMessage());
             }
+        }
+        else {
+            try {
+                ContentValues cv = new ContentValues();
+                cv.put(PRENAME, session.person.prename);
+                cv.put(SURNAME, session.person.surname);
+                db.update(PERSONSTABLE, cv,
+                        "where p" + PK + " = " + session.person.id , null);
+                cv.clear();
+
+                cv.put(STARTLOCATION, session.startLocation);
+                cv.put(PERSONID, session.person.id);
+                cv.put(STARTDATE, session.startDate.toString());
+                cv.put(TITLE, session.title);
+                cv.put(DURATION, session.duration);
+                db.update(SESSIONTABLE, cv,
+                        "where s" + PK + " = " + session.id , null);
+                cv.clear();
+
+                db.delete(SESSIONDESTTABLE, "where " + SESSIONID + " = " + session.id, null);
+
+                for (DODestination dest : session.getStations()) {
+
+                    cv.put(FOODCOSTS, dest.foodCosts);
+                    cv.put(SLEEPCOSTS, dest.sleepCosts);
+                    cv.put(TRIPEXTRACOSTS, dest.tripExtraCosts);
+                    cv.put(DESTLOCATION, dest.location);
+                    cv.put(OCCASION, dest.occasion);
+                    db.update(PERSONSTABLE, cv,
+                            "where d" + PK + " = " + dest.id , null);
+                    cv.clear();
 
 
-        } catch (Exception ex) {
-            throw new SaveLoadException(ex.getMessage());
+                    cv.put(SESSIONID, session.id);
+                    cv.put(DESTINATIONID, dest.id);
+                    db.insert(SESSIONDESTTABLE, null, cv);
+                }
 
+
+            } catch (Exception ex) {
+                throw new SaveLoadException(ex.getMessage());
+            }
         }
     }
 
@@ -197,6 +241,18 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
         } finally {
             db.close();
         }
+    }
+
+    @Override
+    public void removeDestination(DODestination dest) throws SaveLoadException {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            db.delete(DESTINATIONTABLE, "where d" + PK + " = " + dest.id, null);
+            db.delete(SESSIONDESTTABLE, "where " + DESTINATIONID + " = " + dest.id, null);
+        } catch (Exception ex) {
+            throw new SaveLoadException("Das Ziel konnte nicht entfernt werden");
+        }
+
     }
 
     List<DODestination> getDestiationsFromCursor(Cursor cursor) {

@@ -154,9 +154,10 @@ public class CentralLogic {
      * removes the station at the given index for the current session
      * @param index index
      */
-    public void removeStation(int index) {
+    public void removeStation(int index) throws SaveLoadException {
         if (curSession != null && curSession.stations != null &&
                 index > 0 && index < curSession.getStations().size()) {
+            saveLoadHandler.removeDestination(curSession.getStationAt(index));
             curSession.removeStation(index);
         }
     }

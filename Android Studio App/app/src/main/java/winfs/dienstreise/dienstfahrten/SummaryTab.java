@@ -86,7 +86,10 @@ public class SummaryTab extends TabFragmentBase {
     void loadSession() {
         if (!(session == null || session.isDummy)) {
             try {
-                Overview.LOGIC.calculateCosts();
+                String[] result = Overview.LOGIC.calculateCosts();
+                if (result.length > 1) {
+                    throw new DienstfahrtenException(Messages.NotIdentifiable());
+                }
             } catch (DienstfahrtenException e) {
                 Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG);
             }

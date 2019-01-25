@@ -118,6 +118,7 @@ public class Calculator {
                             JSONObject distanceElement = rows.getJSONObject(0).getJSONArray("elements").getJSONObject(0);
                             if ("OK".equals(distanceElement.getString("status").toUpperCase())) {
                                 String distanceString = distanceElement.getJSONObject("distance").getString("text");
+                                distanceString = distanceString.replaceAll(",", ".");
                                 Double amount = Double.parseDouble(distanceString.substring(0, distanceString.indexOf(' ')));
                                 distance += amount;
                             }

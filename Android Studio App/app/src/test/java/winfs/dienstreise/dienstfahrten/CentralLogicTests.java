@@ -94,7 +94,7 @@ public class CentralLogicTests {
 
     @Test
     public void testAutoCompleter() {
-        String[] autoCompleterText = new String[] {
+        String[] autoCompleterText = new String[]{
                 "{\"predictions\":[{\"reference\":\"ChIJAVkDPzdOqEcRcDteW0YgIQQ\",\"types\":[\"locality\",\"political\",\"geocode\"],\"matched_substrings\":[{\"offset\":0,\"length\":6}],\"terms\":[{\"offset\":0,\"value\":\"Berlin\"},{\"offset\":8,\"value\":\"Deutschland\"}],\"structured_formatting\":{\"main_text_matched_substrings\":[{\"offset\":0,\"length\":6}],\"secondary_text\":\"Deutschland\",\"main_text\":\"Berlin\"},\"description\":\"Berlin, Deutschland\",\"id\":\"6b1afbd7fcf2ec16ff8e2f95514e2badb8c2451d\",\"place_id\":\"ChIJAVkDPzdOqEcRcDteW0YgIQQ\"},{\"reference\":\"ChIJe-ff-71RqEcRqvy8lRR4PHo\",\"types\":[\"transit_station\",\"point_of_interest\",\"establishment\",\"geocode\"],\"matched_substrings\":[{\"offset\":0,\"length\":6}],\"terms\":[{\"offset\":0,\"value\":\"Berlin Hauptbahnhof\"},{\"offset\":21,\"value\":\"Europaplatz\"},{\"offset\":34,\"value\":\"Berlin\"},{\"offset\":42,\"value\":\"Deutschland\"}],\"structured_formatting\":{\"main_text_matched_substrings\":[{\"offset\":0,\"length\":6}],\"secondary_text\":\"Europaplatz, Berlin, Deutschland\",\"main_text\":\"Berlin Hauptbahnhof\"},\"description\":\"Berlin Hauptbahnhof, Europaplatz, Berlin, Deutschland\",\"id\":\"3f3350651fb1e3cc1a50e6cd5ed15adb106feb96\",\"place_id\":\"ChIJe-ff-71RqEcRqvy8lRR4PHo\"}],\"status\":\"OK\"}"
         };
 
@@ -109,16 +109,6 @@ public class CentralLogicTests {
             Assert.assertTrue("second address should be Hauptbahnhof", result[1].equals("Berlin Hauptbahnhof, Europaplatz, Berlin, Deutschland"));
         } catch (DienstfahrtenException e) {
             Assert.assertFalse("should not have thrown an exception", true);
-        }
-    }
-
-    @Test
-    public void manualTest() {
-        CentralLogic logic = new CentralLogic(new ApiUser(), new FakeSaveLoadHandler(null));
-        try {
-            String[] result = logic.useAutoCompleter("w");
-        } catch (DienstfahrtenException e) {
-            e.printStackTrace();
         }
     }
 }

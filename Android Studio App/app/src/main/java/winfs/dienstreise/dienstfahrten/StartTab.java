@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -161,7 +162,15 @@ public class StartTab extends TabFragmentBase {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Overview.LOGIC.changeLocation(0, autoCompleteTextView.getText().toString());
+                Overview.LOGIC.changeStartingLocation(autoCompleteTextView.getText().toString());
+                try {
+                    String[] result = Overview.LOGIC.calculateCosts();
+                    if (result.length > 1) {
+                        throw new DienstfahrtenException(Messages.NotIdentifiable());
+                    }
+                } catch (DienstfahrtenException e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG);
+                }
             }
         });
         handler = new Handler(new Handler.Callback() {

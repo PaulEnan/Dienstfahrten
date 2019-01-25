@@ -67,6 +67,86 @@ public class DestinationTab extends TabFragmentBase {
             }
         });
 
+        editTextExtraCosts.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeDestination(pos - 1,
+                        editTextSleepCosts.getText().toString(),
+                        editTextFoodCosts.getText().toString(),
+                        editTextExtraCosts.getText().toString(),
+                        autoCompleteDestLocation.getText().toString(),
+                        editTextOccasion.getText().toString());
+            }
+        });
+
+        editTextFoodCosts.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeDestination(pos - 1,
+                        editTextSleepCosts.getText().toString(),
+                        editTextFoodCosts.getText().toString(),
+                        editTextExtraCosts.getText().toString(),
+                        autoCompleteDestLocation.getText().toString(),
+                        editTextOccasion.getText().toString());
+            }
+        });
+
+        editTextSleepCosts.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeDestination(pos - 1,
+                        editTextSleepCosts.getText().toString(),
+                        editTextFoodCosts.getText().toString(),
+                        editTextExtraCosts.getText().toString(),
+                        autoCompleteDestLocation.getText().toString(),
+                        editTextOccasion.getText().toString());
+            }
+        });
+
+        editTextOccasion.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeDestination(pos - 1,
+                        editTextSleepCosts.getText().toString(),
+                        editTextFoodCosts.getText().toString(),
+                        editTextExtraCosts.getText().toString(),
+                        autoCompleteDestLocation.getText().toString(),
+                        editTextOccasion.getText().toString());
+            }
+        });
+
         //region AutoCompleter
         final Context context = this.getContext();
         final AppCompatAutoCompleteTextView autoCompleteTextView = destTab.findViewById
@@ -103,6 +183,15 @@ public class DestinationTab extends TabFragmentBase {
 
             @Override
             public void afterTextChanged(Editable s) {
+                Overview.LOGIC.changeLocation(pos, autoCompleteDestLocation.getText().toString());
+                try {
+                    String[] result = Overview.LOGIC.calculateCosts();
+                    if (result.length > 1) {
+                        throw new DienstfahrtenException(Messages.NotIdentifiable());
+                    }
+                } catch (DienstfahrtenException e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG);
+                }
             }
         });
         handler = new Handler(new Handler.Callback() {
@@ -154,11 +243,23 @@ public class DestinationTab extends TabFragmentBase {
         if (!tpa.removeFragment(pos - 1)) {
             Toast.makeText(getContext(), "Du kannst dein einziges Ziel nicht entfernen", Toast.LENGTH_LONG);
         }
+        else {
+            Overview.LOGIC.removeStation(pos - 1);
+            try {
+                String[] result = Overview.LOGIC.calculateCosts();
+                if (result.length > 1) {
+                    throw new DienstfahrtenException(Messages.NotIdentifiable());
+                }
+            } catch (DienstfahrtenException e) {
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG);
+            }
+        }
     }
 
     @Override
     void addTab() {
         tpa.addFragment(pos);
+        Overview.LOGIC.addEmptyStation(pos);
     }
 
     @Override

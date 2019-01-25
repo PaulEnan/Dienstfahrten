@@ -16,6 +16,10 @@ public class Messages {
         return "ERROR: Adressen mit '" + symbol + "' werden nicht akzeptiert.";
     }
 
+    public static String NotIdentifiable() {
+        return "Mindestens eine Station war nicht genau identifizierbar";
+    }
+
     public static String JSONError() {
         return "ERROR: Ein Fehler bei der Google Maps Anfrage ist aufgetreten. " +
                 "Bitte überprüfen Sie ihre Netzwerkverbindung.";

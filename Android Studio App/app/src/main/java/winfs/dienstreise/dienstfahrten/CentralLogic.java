@@ -103,11 +103,8 @@ public class CentralLogic {
      * the connection did not work
      */
     public String[] calculateCosts() throws DienstfahrtenException {
-        DODestination[] arr = curSession.getStations().toArray(new DODestination[curSession.getStations().size()]);
-        String[] stationArr = new String[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            stationArr[i] = arr[i].location;
-        }
+        String[] stationArr = curSession.getAllStations()
+                .toArray(new String[curSession.getAllStations().size()]);
         String result = calculator.caclculateVariableCostsForMultipleStations(stationArr);
         if (result.contains("||")) {
             String[] options = result.split("\\|\\|");
@@ -142,6 +139,7 @@ public class CentralLogic {
         return new String[0];
     }
 
+    //stays here in case ever needed
     public void addStation(DODestination station) {
         curSession.addStation(station);
     }
@@ -150,12 +148,21 @@ public class CentralLogic {
         curSession.addStation(station, index);
     }
 
+    /**
+     * removes the station at the given index for the current session
+     * @param index index
+     */
     public void removeStation(int index) {
-        if (index > 0 && index < curSession.getStations().size()) {
+        if (curSession != null && curSession.stations != null &&
+                index > 0 && index < curSession.getStations().size()) {
             curSession.removeStation(index);
         }
     }
 
+    /**
+     * changes the date for the current session
+     * @param date date
+     */
     public void changeDate(String date) {
         if (curSession != null) {
             String string = "date";
@@ -169,12 +176,20 @@ public class CentralLogic {
 
     }
 
+    /**
+     * changes the duration of the current session
+     * @param duration duration
+     */
     public void changeDuration(String duration) {
         if (curSession != null) {
             curSession.duration = Integer.parseInt(duration);
         }
     }
 
+    /**
+     * chnages the pre name of the current session's person. Might create a person first if none is given
+     * @param preName prename
+     */
     public void changePreName(String preName) {
         if (curSession != null) {
             if (curSession.person == null) {
@@ -184,6 +199,10 @@ public class CentralLogic {
         }
     }
 
+    /**
+     * chnages the sur name of the current session's person. Might create a person first if none is given
+     * @param surName surname
+     */
     public void changeSurName(String surName) {
         if (curSession != null) {
             if (curSession.person == null) {
@@ -193,8 +212,17 @@ public class CentralLogic {
         curSession.person.surname = surName;
     }
 
-    public void changeDestination(int index, double sleepCosts, double foodCosts,
-                               double tripExtraCosts, String location, String occasion) {
+    /**
+     * changes the values of one destination in the persons stationlist at a given index
+     * @param index index
+     * @param sleepCosts stations sleepcosts
+     * @param foodCosts stations foodcosts
+     * @param tripExtraCosts stations tripextracosts
+     * @param location stations locations
+     * @param occasion stations occasion
+     */
+    public void changeDestination(int index, String sleepCosts, String foodCosts,
+                                  String tripExtraCosts, String location, String occasion) {
         List<DODestination> dests = curSession.getStations();
         if (dests != null && index >= 0) {
             if (dests.size() == 0 && index == 0) {
@@ -202,16 +230,30 @@ public class CentralLogic {
                 "", ""));
             }
             if (dests.size() > index) {
-
+                if (sleepCosts != null && !sleepCosts.isEmpty()) {
+                    dests.get(index).sleepCosts = Double.parseDouble(sleepCosts);
+                }
+                if (foodCosts != null && !foodCosts.isEmpty()) {
+                    dests.get(index).foodCosts = Double.parseDouble(foodCosts);
+                }
+                if (tripExtraCosts != null && !tripExtraCosts.isEmpty()) {
+                    dests.get(index).tripExtraCosts = Double.parseDouble(tripExtraCosts);
+                }
+                if (location != null && !location.isEmpty()) {
+                    dests.get(index).location = location;
+                }
+                if (occasion != null && !occasion.isEmpty()) {
+                    dests.get(index).occasion = occasion;
+                }
             }
-            dests.get(index).sleepCosts = sleepCosts;
-            dests.get(index).foodCosts = foodCosts;
-            dests.get(index).tripExtraCosts = tripExtraCosts;
-            dests.get(index).location = location;
-            dests.get(index).occasion = occasion;
         }
     }
 
+    /**
+     *
+     * @param index
+     * @param location
+     */
     public void changeLocation(int index, String location) {
         List<DODestination> dests = curSession != null ? curSession.getStations() : null;
         if (dests != null && index >= 0) {
@@ -228,6 +270,18 @@ public class CentralLogic {
     public void changeTitle(String title) {
         if (curSession != null) {
             curSession.title = title;
+        }
+    }
+
+    public void changeStartingLocation(String startLocation) {
+        if (curSession != null) {
+            this.curSession.startLocation = startLocation;
+        }
+    }
+
+    public void addEmptyStation(int index) {
+        if (curSession != null && curSession.getStations() != null) {
+            curSession.stations.add(index, new DODestination());
         }
     }
 

@@ -1,5 +1,6 @@
 package winfs.dienstreise.dienstfahrten;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +43,15 @@ public class DOSession {
         return stations;
     }
 
+    List<String> getAllStations() {
+        ArrayList<String> stationStrings = new ArrayList<>();
+        stationStrings.add(startLocation);
+        for (DODestination station : stations) {
+            stationStrings.add(station.location);
+        }
+        return stationStrings;
+    }
+
     void addStation(DODestination station, int index) {
         this.stations.add(index, station);
     }
@@ -52,10 +62,6 @@ public class DOSession {
 
     void removeStation(int index) {
         this.stations.remove(index);
-    }
-
-    void setPerson(DOPerson person) {
-        this.person = person;
     }
 
     void setId(int id) {

@@ -238,7 +238,6 @@ public class DestinationTab extends TabFragmentBase {
             Toast.makeText(getContext(), "Du kannst dein einziges Ziel nicht entfernen", Toast.LENGTH_LONG);
         }
         else {
-            Overview.LOGIC.removeStation(pos - 1);
             try {
                 String[] result = Overview.LOGIC.calculateCosts();
                 if (result.length > 1) {

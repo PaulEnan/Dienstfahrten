@@ -243,18 +243,6 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
         }
     }
 
-    @Override
-    public void removeDestination(DODestination dest) throws SaveLoadException {
-        try {
-            SQLiteDatabase db = this.getWritableDatabase();
-            db.delete(DESTINATIONTABLE, "where d" + PK + " = " + dest.id, null);
-            db.delete(SESSIONDESTTABLE, "where " + DESTINATIONID + " = " + dest.id, null);
-        } catch (Exception ex) {
-            throw new SaveLoadException("Das Ziel konnte nicht entfernt werden");
-        }
-
-    }
-
     List<DODestination> getDestiationsFromCursor(Cursor cursor) {
         List<DODestination> destinations = new LinkedList<>();
         while (cursor.moveToNext()) {

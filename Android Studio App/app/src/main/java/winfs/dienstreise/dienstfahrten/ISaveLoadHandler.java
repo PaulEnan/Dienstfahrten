@@ -12,6 +12,4 @@ public interface ISaveLoadHandler {
 
     List<DOSession> getAllSessions() throws SaveLoadException;
 
-    void removeDestination(DODestination stationAt) throws SaveLoadException;
-
 }

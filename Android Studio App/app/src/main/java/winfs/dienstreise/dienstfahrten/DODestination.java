@@ -37,4 +37,27 @@ public class DODestination {
     void setId(int id) {
         this.id = id;
     }
+
+    public boolean getIsDummy() {
+        return isDummy;
+    }
+    public int getId() {
+        return id;
+    }
+
+    public double getSleepCosts() {
+        return sleepCosts;
+    }
+    public double getFoodCosts() {
+        return foodCosts;
+    }
+    public double getTripExtraCosts() {
+        return tripExtraCosts;
+    }
+    public String getLocation() {
+        return location;
+    }
+    public String getOccasion() {
+        return occasion;
+    }
 }

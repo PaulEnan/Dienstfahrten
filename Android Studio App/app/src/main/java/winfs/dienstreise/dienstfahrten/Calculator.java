@@ -92,7 +92,8 @@ public class Calculator {
      */
     private String calculateVariableCosts(String origin, String destination) throws DienstfahrtenException {
         //only works for one origin to one destination.
-        if (!origin.contains("|") && !destination.contains("|")) {
+        if (origin != null && destination != null
+                && !origin.contains("|") && !destination.contains("|")) {
             JSONObject originObject = apiUser.getExistingAddress(origin);
             JSONObject destinationObject = apiUser.getExistingAddress(destination);
 

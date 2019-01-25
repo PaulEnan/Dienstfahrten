@@ -70,7 +70,9 @@ public class CentralLogic {
      */
     public void SaveSession() throws DienstfahrtenException {
         if (curSession != null) {
-            if (!saveLoadHandler.Save(curSession)) {
+            try {
+                saveLoadHandler.Save(curSession);
+            } catch (SaveLoadException e) {
                 throw new DienstfahrtenException("Speichern nicht möglich");
             }
         }
@@ -106,18 +108,21 @@ public class CentralLogic {
     public String[] calculateCosts() throws DienstfahrtenException {
         String[] stationArr = curSession.getAllStations()
                 .toArray(new String[curSession.getAllStations().size()]);
-        String result = calculator.caclculateVariableCostsForMultipleStations(stationArr);
-        if (result.contains("||")) {
-            String[] options = result.split("\\|\\|");
-            return options;
-        } else {
-            if (result.toLowerCase().startsWith("error:")) {
-                throw new DienstfahrtenException(result);
+        if (stationArr.length > 1) {
+            String result = calculator.caclculateVariableCostsForMultipleStations(stationArr);
+            if (result.contains("||")) {
+                String[] options = result.split("\\|\\|");
+                return options;
             } else {
-                curSession.setVariableCosts(Double.parseDouble(result));
-                return new String[]{curSession.getVariableCosts() + ""};
+                if (result.toLowerCase().startsWith("error:")) {
+                    throw new DienstfahrtenException(result);
+                } else {
+                    curSession.setVariableCosts(Double.parseDouble(result));
+                    return new String[]{curSession.getVariableCosts() + ""};
+                }
             }
         }
+        return new String[0];
     }
 
     /**
@@ -166,7 +171,7 @@ public class CentralLogic {
      */
     public void changeDate(String date) {
         if (curSession != null) {
-            String string = "date";
+            String string = date;
             DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
             try {
                 Date changedDate = format.parse(string);

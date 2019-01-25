@@ -52,8 +52,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="160dp"
-        android:inputType="datetime"
-        android:hint="Startdatum (z.B. 13.01.2019 15:00" />
+        android:hint="Startdatum (z.B. 13.01.2019 15:00)" />
 
     <EditText
         android:id="@+id/editTextDuration"

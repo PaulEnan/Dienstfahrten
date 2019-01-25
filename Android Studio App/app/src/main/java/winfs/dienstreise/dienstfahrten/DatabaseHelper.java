@@ -103,7 +103,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
     }
 
     @Override
-    public boolean Save(DOSession session) {
+    public void Save(DOSession session) throws SaveLoadException {
         SQLiteDatabase db = this.getWritableDatabase();
         int id;
         try {
@@ -141,10 +141,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements ISaveLoadHandler
 
 
         } catch (Exception ex) {
-            return false;
+            throw new SaveLoadException(ex.getMessage());
 
         }
-        return true;
     }
 
     @Override

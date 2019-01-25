@@ -25,4 +25,20 @@ class DOPerson {
     public String toString() {
         return prename + " " + surname;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getPreName() {
+        return prename;
+    }
+
+    public String getSurName() {
+        return surname;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

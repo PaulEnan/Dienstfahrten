@@ -26,6 +26,18 @@ public class DOSession {
         stations = new LinkedList<>();
     }
 
+    public DOSession(List<DODestination> stations, String title, DOPerson person,
+                     String startLocation, Date startDate, int duration, double variableCosts) {
+        this.stations = stations;
+        this.title = title;
+        this.person = person;
+        this.startLocation = startLocation;
+        this.startDate = startDate;
+        isDummy = false;
+        this.duration = duration;
+        this.variableCosts = variableCosts;
+    }
+
     public DOSession(int id, List<DODestination> stations, String title, DOPerson person,
                      String startLocation, Date startDate, int duration, double variableCosts) {
         this.id = id;
@@ -97,5 +109,35 @@ public class DOSession {
 
     DODestination getStationAt(int position) {
         return stations.get(position);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public boolean getIsDummy() {
+        return isDummy;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public List<DOPerson> getNames() {
+        List<DOPerson> persons = new ArrayList<DOPerson>();
+        persons.add(person);
+        return persons;
+    }
+
+    public String getStartLocation() {
+        return startLocation;
+    }
+
+    public Date getDate() {
+        return startDate;
     }
 }

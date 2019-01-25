@@ -49,7 +49,6 @@ public class SummaryTab extends TabFragmentBase {
                     Toast.makeText(getContext(), "Speichern nicht möglich durch inkorrekte Werte", Toast.LENGTH_LONG);
                 } else {
                     Intent openOverview = new Intent(getContext(), Overview.class);
-
                     startActivity(openOverview);
                 }
             }

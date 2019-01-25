@@ -10,7 +10,7 @@ import java.util.Set;
  * @author winf101441 + Joachim Borgloh
  */
 public interface ISaveLoadHandler {
-    boolean Save(DOSession session);
+    void Save(DOSession session) throws SaveLoadException;
     DOSession Load(int index) throws SaveLoadException;
     List<DOSession> getAllSessions() throws SaveLoadException;
 }

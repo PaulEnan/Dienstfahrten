@@ -157,7 +157,6 @@ public class CentralLogic {
     public void removeStation(int index) throws SaveLoadException {
         if (curSession != null && curSession.stations != null &&
                 index > 0 && index < curSession.getStations().size()) {
-            saveLoadHandler.removeDestination(curSession.getStationAt(index));
             curSession.removeStation(index);
         }
     }

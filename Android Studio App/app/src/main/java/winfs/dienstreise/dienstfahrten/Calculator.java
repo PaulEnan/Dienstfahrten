@@ -92,49 +92,51 @@ public class Calculator {
      */
     private String calculateVariableCosts(String origin, String destination) throws DienstfahrtenException {
         //only works for one origin to one destination.
-        if (origin != null && destination != null
-                && !origin.contains("|") && !destination.contains("|")) {
-            JSONObject originObject = apiUser.getExistingAddress(origin);
-            JSONObject destinationObject = apiUser.getExistingAddress(destination);
+        if (origin != null && destination != null) {
+            if(!origin.contains("|") && !destination.contains("|")) {
+                JSONObject originObject = apiUser.getExistingAddress(origin);
+                JSONObject destinationObject = apiUser.getExistingAddress(destination);
 
-            if (originObject == null ||destinationObject == null) {
-                throw new DienstfahrtenException(Messages.JSONError());
-            }
-            try {
-                if (!originObject.toString().isEmpty()
-                        && "OK".equals(originObject.getString("status").toUpperCase())) {
-                    if (!"".equals(destinationObject.toString())
-                            && "OK".equals(destinationObject.getString("status").toUpperCase())) {
-                        String originAddress = originObject.getJSONArray("candidates")
-                                .getJSONObject(0).getString("formatted_address");
-                        String destinationAddress = destinationObject.getJSONArray("candidates")
-                                .getJSONObject(0).getString("formatted_address");
-
-                        JSONObject distanceObject = apiUser.getDistance(originAddress, destinationAddress);
-
-                        int distance = 0;
-                        if (distanceObject != null
-                                && "OK".equals(distanceObject.getString("status").toUpperCase())) {
-                            JSONArray rows = distanceObject.getJSONArray("rows");
-                            JSONObject distanceElement = rows.getJSONObject(0).getJSONArray("elements").getJSONObject(0);
-                            if ("OK".equals(distanceElement.getString("status").toUpperCase())) {
-                                String distanceString = distanceElement.getJSONObject("distance").getString("text");
-                                distanceString = distanceString.replaceAll(",", ".");
-                                Double amount = Double.parseDouble(distanceString.substring(0, distanceString.indexOf(' ')));
-                                distance += amount;
-                            }
-                        }
-
-                        double result = distance * CentralLogic.variableCostRate;
-                        return result + "";
-                    }
-                    return autoCompleteAddress(destination);
+                if (originObject == null ||destinationObject == null) {
+                    throw new DienstfahrtenException(Messages.JSONError());
                 }
-            } catch (JSONException e) {
-                throw new DienstfahrtenException(Messages.JSONError());
+                try {
+                    if (!originObject.toString().isEmpty()
+                            && "OK".equals(originObject.getString("status").toUpperCase())) {
+                        if (!"".equals(destinationObject.toString())
+                                && "OK".equals(destinationObject.getString("status").toUpperCase())) {
+                            String originAddress = originObject.getJSONArray("candidates")
+                                    .getJSONObject(0).getString("formatted_address");
+                            String destinationAddress = destinationObject.getJSONArray("candidates")
+                                    .getJSONObject(0).getString("formatted_address");
+
+                            JSONObject distanceObject = apiUser.getDistance(originAddress, destinationAddress);
+
+                            int distance = 0;
+                            if (distanceObject != null
+                                    && "OK".equals(distanceObject.getString("status").toUpperCase())) {
+                                JSONArray rows = distanceObject.getJSONArray("rows");
+                                JSONObject distanceElement = rows.getJSONObject(0).getJSONArray("elements").getJSONObject(0);
+                                if ("OK".equals(distanceElement.getString("status").toUpperCase())) {
+                                    String distanceString = distanceElement.getJSONObject("distance").getString("text");
+                                    distanceString = distanceString.replaceAll(",", ".");
+                                    Double amount = Double.parseDouble(distanceString.substring(0, distanceString.indexOf(' ')));
+                                    distance += amount;
+                                }
+                            }
+
+                            double result = distance * CentralLogic.variableCostRate;
+                            return result + "";
+                        }
+                        return autoCompleteAddress(destination);
+                    }
+                } catch (JSONException e) {
+                    throw new DienstfahrtenException(Messages.JSONError());
+                }
+                return autoCompleteAddress(origin);
             }
-            return autoCompleteAddress(origin);
+            throw new DienstfahrtenException(Messages.NoAdressesWith('|'));
         }
-        throw new DienstfahrtenException(Messages.NoAdressesWith('|'));
+        return 0 + "";
     }
 }
